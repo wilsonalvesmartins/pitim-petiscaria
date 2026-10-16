@@ -362,6 +362,25 @@ app.post('/api/orders', async (req, res) => {
             [cleanPhone, name, address || '', neighborhood || '', number || '', complement || '']
         );
 
+        // Cálculo seguro de subtotal, taxa de entrega e total
+        const calcSubtotal = (subtotal !== undefined && subtotal !== null) 
+            ? Number(subtotal) 
+            : items.reduce((acc, it) => acc + (Number(it.price || 0) * Number(it.quantity || 1)), 0);
+
+        let calcDeliveryFee = 0;
+        if (type === 'delivery') {
+            if (delivery_fee !== undefined && delivery_fee !== null) {
+                calcDeliveryFee = Number(delivery_fee);
+            } else {
+                const feeRow = await get(`SELECT value FROM settings WHERE key = 'delivery_fee'`);
+                calcDeliveryFee = feeRow ? Number(feeRow.value) : 8.0;
+            }
+        }
+
+        const calcTotal = (total !== undefined && total !== null) 
+            ? Number(total) 
+            : (calcSubtotal + calcDeliveryFee);
+
         // Salva o pedido
         const itemsJson = JSON.stringify(items);
         const result = await run(`INSERT INTO orders 
@@ -370,7 +389,7 @@ app.post('/api/orders', async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pendente')`,
             [
                 cleanPhone, name, address || '', neighborhood || '', number || '', complement || '',
-                type, paymentMethod, changeFor || null, itemsJson, notes || '', subtotal, delivery_fee || 0, total
+                type, paymentMethod, changeFor || null, itemsJson, notes || '', calcSubtotal, calcDeliveryFee, calcTotal
             ]
         );
 
@@ -388,9 +407,9 @@ app.post('/api/orders', async (req, res) => {
             changeFor,
             items,
             notes,
-            subtotal,
-            delivery_fee: delivery_fee || 0,
-            total,
+            subtotal: calcSubtotal,
+            delivery_fee: calcDeliveryFee,
+            total: calcTotal,
             status: 'Pendente',
             created_at: new Date().toISOString()
         };
@@ -414,9 +433,9 @@ app.post('/api/orders', async (req, res) => {
             change_for: changeFor,
             items,
             notes: notes || '',
-            subtotal,
-            delivery_fee: delivery_fee || 0,
-            total,
+            subtotal: calcSubtotal,
+            delivery_fee: calcDeliveryFee,
+            total: calcTotal,
             status: 'Pendente',
             formatted_message: formattedMessage,
             created_at: fullOrder.created_at
