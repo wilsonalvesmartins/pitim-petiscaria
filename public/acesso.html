@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Master - Pitim Petiscaria</title>
+    <title>Painel Master - Pitim Petiscaria & Espetos</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script>
         tailwind.config = {
             theme: {
@@ -27,7 +30,7 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -37,6 +40,9 @@
         h1, h2, h3, .font-heading {
             font-family: 'Outfit', sans-serif;
         }
+        .font-display {
+            font-family: 'Oswald', sans-serif;
+        }
         .fire-btn {
             background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
             box-shadow: 0 4px 15px rgba(234, 88, 12, 0.35);
@@ -45,8 +51,11 @@
             background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
             box-shadow: 0 6px 20px rgba(234, 88, 12, 0.5);
         }
+        .gold-gradient {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+        }
         .glass-header {
-            background: rgba(12, 12, 14, 0.92);
+            background: rgba(12, 12, 14, 0.94);
             backdrop-filter: blur(12px);
         }
         @media print {
@@ -88,6 +97,7 @@
                 <img src="/img/logo.png" alt="Logo" class="w-20 h-20 mx-auto object-contain rounded-full border-2 border-pitim-amber shadow-xl mb-3">
                 <h1 class="text-2xl font-black text-white">ACESSO MASTER</h1>
                 <p class="text-xs text-gray-400 mt-1">Pitim Petiscaria & Espetos</p>
+                <p class="text-[11px] text-pitim-gold font-semibold mt-0.5">Gestão Integrada: Mesas Presenciais & Delivery</p>
             </div>
 
             <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
@@ -115,14 +125,14 @@
                 </div>
                 <div id="login-error" class="hidden p-3 bg-red-950/80 border border-red-500/40 rounded-xl text-red-200 text-xs"></div>
                 <button type="submit" id="login-btn" class="w-full fire-btn text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition">
-                    Entrar no Painel
+                    Entrar no Painel Master
                 </button>
             </form>
 
-            <div class="text-center mt-6">
-                <a href="/" class="text-xs text-gray-500 hover:text-pitim-amber transition">
-                    ← Voltar ao Cardápio
-                </a>
+            <div class="flex items-center justify-around mt-6 pt-4 border-t border-pitim-border text-xs text-gray-400">
+                <a href="/comanda" class="hover:text-pitim-gold transition">🪑 Comanda Presencial</a>
+                <span>•</span>
+                <a href="/delivery" class="hover:text-pitim-amber transition">🛵 Cardápio Delivery</a>
             </div>
         </div>
     </div>
@@ -137,70 +147,152 @@
                     <img src="/img/logo.png" alt="Logo" class="w-10 h-10 object-contain rounded-full border border-pitim-amber shadow">
                     <div>
                         <h1 class="text-base font-black text-white flex items-center gap-1.5">
-                            PAINEL MASTER <span class="text-xs bg-pitim-amber text-black px-2 py-0.5 rounded-full font-bold">PITIM</span>
+                            PAINEL MASTER <span class="text-xs bg-pitim-amber text-black px-2 py-0.5 rounded-full font-bold">UNIFICADO</span>
                         </h1>
-                        <p class="text-[11px] text-gray-400">Gestão de Delivery & Comandas</p>
+                        <p class="text-[11px] text-gray-400">Pitim Petiscaria • Mesas Presenciais & Delivery</p>
                     </div>
                 </div>
 
                 <!-- Navigation Tabs -->
-                <nav class="flex items-center gap-1.5 bg-pitim-dark p-1 rounded-xl border border-pitim-border text-xs font-bold">
-                    <button onclick="setTab('orders')" id="tab-btn-orders" class="px-3.5 py-1.5 rounded-lg bg-pitim-amber text-black transition flex items-center gap-1.5 shadow">
-                        <span>📦 Pedidos</span>
+                <nav class="flex items-center gap-1 bg-pitim-dark p-1 rounded-xl border border-pitim-border text-xs font-bold overflow-x-auto">
+                    <button onclick="setTab('mesas')" id="tab-btn-mesas" class="px-3.5 py-1.5 rounded-lg bg-pitim-amber text-black transition flex items-center gap-1.5 shadow">
+                        <i class="fa-solid fa-chair text-xs"></i>
+                        <span>Mesas & Comandas</span>
+                        <span id="active-tables-badge" class="hidden px-1.5 py-0.2 bg-black/40 text-black font-black rounded-full text-[10px]">0</span>
+                    </button>
+                    <button onclick="setTab('orders')" id="tab-btn-orders" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-motorcycle text-xs"></i>
+                        <span>Delivery</span>
                         <span id="pending-badge" class="hidden px-1.5 py-0.2 bg-red-600 text-white rounded-full text-[10px] font-black">0</span>
                     </button>
+                    <button onclick="setTab('feed')" id="tab-btn-feed" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-ul text-xs"></i>
+                        <span>Feed Geral</span>
+                    </button>
                     <button onclick="setTab('menu')" id="tab-btn-menu" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition flex items-center gap-1.5">
-                        <span>📋 Cardápio & Preços</span>
+                        <i class="fa-solid fa-utensils text-xs"></i>
+                        <span>Cardápio & Preços</span>
                     </button>
                     <button onclick="setTab('settings')" id="tab-btn-settings" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition flex items-center gap-1.5">
-                        <span>⚙️ Configurações</span>
+                        <i class="fa-solid fa-gear text-xs"></i>
+                        <span>Configurações</span>
                     </button>
                 </nav>
 
-                <!-- Audio Alert Control & Logout -->
+                <!-- Audio Alert Control, Links & Logout -->
                 <div class="flex items-center gap-2">
                     <button 
                         id="audio-toggle-btn" 
                         onclick="toggleAudioAlert()" 
                         class="px-3 py-1.5 rounded-xl border border-pitim-border bg-pitim-card text-xs font-bold text-pitim-gold hover:border-pitim-amber transition flex items-center gap-1.5"
-                        title="Ativar ou desativar som de novo pedido"
+                        title="Ativar ou desativar aviso sonoro"
                     >
                         <span id="audio-icon">🔔</span>
-                        <span id="audio-text">Som Ativo</span>
+                        <span id="audio-text" class="hidden sm:inline">Som Ativo</span>
                     </button>
-                    <a href="/" target="_blank" class="px-3 py-1.5 rounded-xl border border-pitim-border bg-pitim-card text-xs font-bold text-gray-300 hover:text-white transition flex items-center gap-1" title="Ver Cardápio Público">
-                        <span>🌐</span>
-                        <span class="hidden sm:inline">Ver Loja</span>
+                    <a href="/comanda" target="_blank" class="px-2.5 py-1.5 rounded-xl border border-pitim-border bg-pitim-card text-xs font-bold text-gray-300 hover:text-pitim-gold transition flex items-center gap-1" title="Abrir Comanda Presencial">
+                        <span>🪑</span>
+                        <span class="hidden md:inline">Mesa</span>
+                    </a>
+                    <a href="/delivery" target="_blank" class="px-2.5 py-1.5 rounded-xl border border-pitim-border bg-pitim-card text-xs font-bold text-gray-300 hover:text-pitim-amber transition flex items-center gap-1" title="Abrir Cardápio Delivery">
+                        <span>🛵</span>
+                        <span class="hidden md:inline">Delivery</span>
                     </a>
                     <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-400 rounded-xl hover:bg-pitim-card transition" title="Sair">
-                        🚪
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     </button>
                 </div>
             </div>
         </header>
 
         <!-- Main Workspace -->
-        <main class="max-w-7xl mx-auto w-full p-4 flex-grow">
+        <main class="max-w-7xl mx-auto w-full p-4 flex-grow space-y-4">
 
-            <!-- TAB 1: PEDIDOS (LIVE ORDERS) -->
-            <section id="tab-content-orders" class="space-y-4">
-                
-                <!-- Quick Stats & Filter Bar -->
+            <!-- Urgent Call Banner Container (Calls & Bill Requests) -->
+            <div id="urgent-calls-container" class="hidden space-y-2"></div>
+
+            <!-- Top General Stats Bar -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-pitim-card border border-pitim-border rounded-2xl p-4 shadow">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-pitim-gold text-lg">
+                        <i class="fa-solid fa-chair"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Mesas Ativas</p>
+                        <p id="stats-active-tables" class="text-lg font-black text-white">0</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-lg">
+                        <i class="fa-solid fa-motorcycle"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Delivery Pendente</p>
+                        <p id="stats-delivery-pending" class="text-lg font-black text-white">0</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-lg">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Total Pedidos</p>
+                        <p id="stats-total-orders" class="text-lg font-black text-white">0</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-lg">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Faturamento Hoje</p>
+                        <p id="stats-total-revenue" class="text-lg font-black text-emerald-400">R$ 0,00</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 1: MESAS & COMANDAS PRESENCIAIS -->
+            <section id="tab-content-mesas" class="space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-pitim-card border border-pitim-border rounded-2xl p-4 shadow">
+                    <div>
+                        <h2 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chair text-pitim-gold"></i>
+                            <span>Mesas & Comandas Digitais</span>
+                        </h2>
+                        <p class="text-xs text-gray-400">Acompanhamento de consumo e fechamento de mesas nas últimas 12 horas.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openManualOrderModal('table')" class="px-4 py-2 rounded-xl gold-gradient text-black font-bold text-xs shadow flex items-center gap-1.5 transition active:scale-95">
+                            <i class="fa-solid fa-plus text-[11px]"></i> Lançar Item na Mesa
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tables Grid -->
+                <div id="tables-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Dynamic table cards -->
+                </div>
+
+                <div id="tables-empty" class="hidden text-center py-16 bg-pitim-card border border-pitim-border rounded-2xl p-6">
+                    <i class="fa-solid fa-champagne-glasses text-4xl text-gray-600 mb-3"></i>
+                    <p class="text-sm font-bold text-gray-300">Nenhuma mesa com consumo ativo nas últimas 12h.</p>
+                    <p class="text-xs text-gray-500 mt-1">Os pedidos feitos no app pelos clientes na mesa aparecerão aqui instantaneamente com som.</p>
+                </div>
+            </section>
+
+            <!-- TAB 2: DELIVERY & BALCÃO -->
+            <section id="tab-content-orders" class="hidden space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-3 bg-pitim-card border border-pitim-border rounded-2xl p-4 shadow">
                     <div class="flex items-center gap-2">
-                        <span class="text-xl">📊</span>
+                        <span class="text-xl">🛵</span>
                         <div>
-                            <div class="text-xs font-bold uppercase tracking-wider text-gray-400">Visão Geral Hoje</div>
-                            <div class="text-sm font-black text-white flex items-center gap-3 mt-0.5">
-                                <span>Total: <strong id="stats-total-orders" class="text-pitim-gold">0</strong> pedidos</span>
-                                <span>•</span>
-                                <span>Faturamento: <strong id="stats-total-revenue" class="text-emerald-400">R$ 0,00</strong></span>
-                            </div>
+                            <div class="text-xs font-bold uppercase tracking-wider text-gray-400">Pedidos de Delivery & Retirada</div>
+                            <div class="text-xs text-gray-400 mt-0.5">Gerencie os pedidos recebidos para entrega em domicílio e balcão.</div>
                         </div>
                     </div>
 
                     <!-- Filter pills -->
-                    <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-none text-xs font-bold">
+                    <div class="flex items-center gap-1.5 overflow-x-auto text-xs font-bold">
                         <button onclick="setOrdersFilter('todos')" id="filter-todos" class="px-3 py-1.5 rounded-lg bg-pitim-amber text-black shadow">Todos</button>
                         <button onclick="setOrdersFilter('Pendente')" id="filter-pendente" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white bg-pitim-dark border border-pitim-border">Pendentes</button>
                         <button onclick="setOrdersFilter('Preparando')" id="filter-preparando" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white bg-pitim-dark border border-pitim-border">Em Preparo</button>
@@ -215,117 +307,113 @@
 
                 <div id="orders-empty" class="hidden text-center py-16 text-gray-500">
                     <span class="text-5xl block mb-2">🍢</span>
-                    <p class="text-base font-bold text-gray-400">Nenhum pedido encontrado</p>
-                    <p class="text-xs text-gray-600 mt-1">Os pedidos feitos no cardápio virtual aparecerão aqui em tempo real com som!</p>
+                    <p class="text-base font-bold text-gray-400">Nenhum pedido de delivery encontrado</p>
+                    <p class="text-xs text-gray-600 mt-1">Os pedidos de entrega realizados pelos clientes aparecerão aqui em tempo real.</p>
                 </div>
-
             </section>
 
-            <!-- TAB 2: GESTÃO DO CARDÁPIO & PREÇOS -->
-            <section id="tab-content-menu" class="hidden space-y-4">
-                <div class="flex flex-wrap items-center justify-between gap-3 bg-pitim-card border border-pitim-border rounded-2xl p-4 shadow">
-                    <div>
-                        <h2 class="text-base font-black text-white">Cardápio & Gestão de Preços</h2>
-                        <p class="text-xs text-gray-400">Adicione novos itens, bebidas, altere preços e ative/desative produtos instantaneamente.</p>
-                    </div>
-                    <button onclick="openAddItemModal()" class="fire-btn px-4 py-2.5 rounded-xl text-xs font-black text-white flex items-center gap-1.5 shadow">
-                        <span>+</span>
-                        <span>Novo Item / Bebida</span>
-                    </button>
+            <!-- TAB 3: FEED GERAL UNIFICADO -->
+            <section id="tab-content-feed" class="hidden space-y-4">
+                <div class="bg-pitim-card border border-pitim-border rounded-2xl p-4 shadow">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-ul text-pitim-gold"></i>
+                        <span>Feed Cronológico de Todos os Pedidos</span>
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Visão única de todos os pedidos realizados (Mesa e Delivery) em ordem cronológica decrescente.</p>
                 </div>
 
-                <div id="admin-menu-list" class="space-y-6">
+                <div id="feed-list" class="space-y-3">
                     <!-- Populated dynamically -->
                 </div>
             </section>
 
-            <!-- TAB 3: CONFIGURAÇÕES -->
-            <section id="tab-content-settings" class="hidden max-w-2xl mx-auto space-y-5">
-                <div class="bg-pitim-card border border-pitim-border rounded-2xl p-6 shadow space-y-6">
-                    <h2 class="text-lg font-black text-white border-b border-pitim-border pb-3">Configurações do Estabelecimento</h2>
+            <!-- TAB 4: CARDÁPIO & PREÇOS -->
+            <section id="tab-content-menu" class="hidden space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-pitim-card border border-pitim-border rounded-2xl p-4 shadow">
+                    <div>
+                        <h2 class="text-base font-bold text-white">Gerenciar Cardápio & Preços</h2>
+                        <p class="text-xs text-gray-400">Edite preços em tempo real, adicione itens, porções e bebidas. Atualiza instantaneamente na Mesa e no Delivery.</p>
+                    </div>
+                    <button onclick="openAddItemModal()" class="px-4 py-2 rounded-xl gold-gradient text-black font-bold text-xs shadow transition active:scale-95 flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus text-[11px]"></i> Novo Item
+                    </button>
+                </div>
+
+                <div id="menu-items-table" class="bg-pitim-card border border-pitim-border rounded-2xl overflow-hidden shadow">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 5: CONFIGURAÇÕES -->
+            <section id="tab-content-settings" class="hidden space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     
-                    <!-- Store Status -->
-                    <div class="flex items-center justify-between p-4 bg-pitim-dark rounded-xl border border-pitim-border">
+                    <!-- Configurações Operacionais -->
+                    <div class="bg-pitim-card border border-pitim-border rounded-2xl p-5 shadow space-y-4">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <span>🏪</span> Operação do Estabelecimento
+                        </h3>
+
                         <div>
-                            <span class="text-sm font-bold text-white block">Status da Petiscaria</span>
-                            <span class="text-xs text-gray-400">Quando fechado, clientes são avisados e não podem finalizar pedidos.</span>
+                            <label class="block text-xs font-bold text-gray-300 mb-1">Status da Petiscaria</label>
+                            <select id="setting-is-open" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
+                                <option value="1">🟢 Aberto para Pedidos</option>
+                                <option value="0">🔴 Fechado no Momento</option>
+                            </select>
                         </div>
-                        <button id="store-status-btn" onclick="toggleStoreOpen()" class="px-4 py-2 rounded-xl text-xs font-black transition shadow">
-                            Aberto
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 mb-1">Taxa de Entrega Padrão (R$)</label>
+                            <input type="number" step="0.50" id="setting-delivery-fee" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 mb-1">Tempo Estimado de Entrega</label>
+                            <input type="text" id="setting-delivery-time" placeholder="40 a 50 minutos" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 mb-1">Chave PIX da Casa</label>
+                            <input type="text" id="setting-pix-key" placeholder="16999999999" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
+                        </div>
+
+                        <button onclick="saveStoreSettings()" class="w-full py-2.5 px-4 rounded-xl gold-gradient text-black font-bold text-xs shadow transition active:scale-95">
+                            Salvar Configurações da Loja
                         </button>
                     </div>
 
-                    <!-- Delivery Settings -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Taxa de Entrega Padrão (R$)</label>
-                            <input type="number" step="0.50" id="setting-delivery-fee" class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Tempo Estimado de Entrega</label>
-                            <input type="text" id="setting-delivery-time" placeholder="40 a 50 minutos" class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber">
-                        </div>
-                    </div>
+                    <!-- Configurações Disparo HTTP Direto (Chatwoot) -->
+                    <div class="bg-pitim-card border border-pitim-border rounded-2xl p-5 shadow space-y-4">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <span>🌐</span> Disparo HTTP Direto (Chatwoot / API)
+                        </h3>
 
-                    <!-- PIX Settings -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Chave PIX</label>
-                            <input type="text" id="setting-pix-key" placeholder="Telefone, CNPJ, e-mail..." class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Nome do Titular do PIX</label>
-                            <input type="text" id="setting-pix-name" placeholder="Pitim Petiscaria" class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber">
-                        </div>
-                    </div>
-
-                    <!-- Direct HTTP / Chatwoot Settings -->
-                    <div class="border-t border-pitim-border pt-5 space-y-4">
                         <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-sm font-bold text-pitim-gold flex items-center gap-1.5">
-                                    <span>🌐 Disparo HTTP Direto (Chatwoot / Webhook)</span>
-                                </h3>
-                                <p class="text-xs text-gray-400 mt-0.5">Envia requisição HTTP direta com os dados do pedido a cada nova comanda.</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="setting-http-enabled" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-pitim-amber"></div>
-                            </label>
+                            <span class="text-xs text-gray-300 font-bold">Ativar Disparo HTTP Automático</span>
+                            <input type="checkbox" id="setting-http-enabled" class="w-4 h-4 accent-amber-500">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">URL do Endpoint HTTP</label>
-                            <input type="url" id="setting-http-url" placeholder="https://chatwoot.cajuru.cloud/api/v1/widget/messages ou webhook" class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber font-mono">
+                            <label class="block text-xs font-bold text-gray-300 mb-1">URL de Destino</label>
+                            <input type="url" id="setting-http-url" placeholder="https://chatwoot.cajuru.cloud/api/v1/..." class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Método</label>
-                                <select id="setting-http-method" class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber">
-                                    <option value="POST">POST</option>
-                                    <option value="PUT">PUT</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Headers JSON</label>
-                                <input type="text" id="setting-http-headers" value='{"Content-Type": "application/json"}' class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white focus:outline-none focus:border-pitim-amber font-mono">
-                            </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 mb-1">Método HTTP</label>
+                            <select id="setting-http-method" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                            </select>
                         </div>
 
-                        <div class="flex items-center gap-3 pt-2">
-                            <button onclick="testHttpDispatch()" type="button" class="px-4 py-2.5 rounded-xl bg-pitim-card border border-pitim-gold/40 text-xs font-bold text-pitim-gold hover:bg-pitim-amber hover:text-black transition flex items-center gap-1.5 shadow">
-                                <span>⚡</span>
-                                <span>Testar Disparo HTTP Agora</span>
+                        <div class="flex items-center gap-2 pt-2">
+                            <button onclick="saveHttpSettings()" class="flex-1 py-2.5 px-4 rounded-xl gold-gradient text-black font-bold text-xs shadow transition active:scale-95">
+                                Salvar Configuração HTTP
                             </button>
-                            <span id="test-http-result" class="text-xs font-mono text-gray-400"></span>
+                            <button onclick="testHttpDispatch()" id="btn-test-http" class="py-2.5 px-4 rounded-xl bg-pitim-dark border border-pitim-border text-xs font-bold text-pitim-gold hover:text-white transition">
+                                Testar Envio
+                            </button>
                         </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-pitim-border">
-                        <button onclick="saveSettings()" class="w-full fire-btn text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition">
-                            Salvar Todas as Configurações
-                        </button>
                     </div>
                 </div>
             </section>
@@ -333,79 +421,272 @@
         </main>
     </div>
 
-    <!-- Modal: Adicionar / Editar Item -->
-    <div id="item-admin-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-pitim-card border border-pitim-border w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
-            <div class="flex items-center justify-between mb-4 border-b border-pitim-border pb-3">
-                <h3 id="modal-item-title" class="text-lg font-black text-white">Novo Item no Cardápio</h3>
-                <button onclick="closeItemAdminModal()" class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+    <!-- MODAL 1: DETALHES DA COMANDA / ITENS -->
+    <div id="comanda-details-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-pitim-card border border-pitim-border rounded-3xl w-full max-w-lg p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-pitim-border pb-3">
+                <div>
+                    <h3 id="modal-comanda-title" class="font-display font-bold text-xl text-white">Detalhes da Comanda</h3>
+                    <p id="modal-comanda-subtitle" class="text-xs text-gray-400"></p>
+                </div>
+                <button onclick="closeComandaDetailsModal()" class="text-gray-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div id="modal-comanda-items" class="overflow-y-auto space-y-2 flex-1">
+                <!-- Injected dynamically -->
             </div>
 
-            <form id="item-form" onsubmit="saveItemForm(event)" class="space-y-3.5">
-                <input type="hidden" id="form-item-id">
+            <div class="pt-3 border-t border-pitim-border flex items-center justify-between">
                 <div>
-                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Categoria</label>
-                    <input type="text" id="form-item-category" list="category-suggestions" placeholder="Espetos na Brasa, Porções, Cervejas..." class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber" required>
-                    <datalist id="category-suggestions">
-                        <option value="Espetos na Brasa">
-                        <option value="Porções & Petiscos">
-                        <option value="Bolinhos Especiais">
-                        <option value="Cervejas">
-                        <option value="Refrigerantes & Bebidas">
-                    </datalist>
+                    <span class="text-xs text-gray-400 uppercase font-bold">Total Desta Comanda:</span>
+                    <p id="modal-comanda-total" class="text-xl font-bold text-pitim-gold font-display">R$ 0,00</p>
                 </div>
+                <button onclick="closeComandaDetailsModal()" class="px-5 py-2.5 rounded-xl bg-pitim-dark text-white border border-pitim-border text-xs font-bold">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: RECEBER PAGAMENTO DE COMANDA INDIVIDUAL -->
+    <div id="pay-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-pitim-card border border-pitim-border rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-pitim-border pb-3">
+                <h3 class="font-display font-bold text-xl text-white flex items-center gap-2">
+                    <i class="fa-solid fa-cash-register text-pitim-gold"></i> Receber Comanda
+                </h3>
+                <button onclick="closePayModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="bg-pitim-dark p-3.5 rounded-xl border border-pitim-border flex justify-between items-center">
                 <div>
-                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Nome do Produto</label>
-                    <input type="text" id="form-item-name" placeholder="Ex: Espeto de Picanha" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber" required>
+                    <p id="pay-table" class="text-xs text-gray-400 font-semibold"></p>
+                    <p id="pay-name" class="text-sm font-bold text-white"></p>
                 </div>
-                <div class="grid grid-cols-2 gap-2.5">
+                <span id="pay-amount" class="text-2xl font-bold text-pitim-gold font-display">R$ 0,00</span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Forma de Pagamento</label>
+                <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                    <button type="button" onclick="selectPayMethod('PIX')" class="pay-method-btn p-3 rounded-xl border border-pitim-gold bg-pitim-gold/15 text-white flex items-center justify-center gap-1.5 transition">
+                        <span>📱 PIX</span>
+                    </button>
+                    <button type="button" onclick="selectPayMethod('Dinheiro')" class="pay-method-btn p-3 rounded-xl border border-pitim-border text-gray-300 flex items-center justify-center gap-1.5 transition">
+                        <span>💵 Dinheiro</span>
+                    </button>
+                    <button type="button" onclick="selectPayMethod('Cartão Débito')" class="pay-method-btn p-3 rounded-xl border border-pitim-border text-gray-300 flex items-center justify-center gap-1.5 transition">
+                        <span>💳 Cartão Débito</span>
+                    </button>
+                    <button type="button" onclick="selectPayMethod('Cartão Crédito')" class="pay-method-btn p-3 rounded-xl border border-pitim-border text-gray-300 flex items-center justify-center gap-1.5 transition">
+                        <span>💳 Cartão Crédito</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="pt-2">
+                <button onclick="confirmPayment()" id="btn-confirm-payment" class="w-full py-3 px-4 rounded-xl gold-gradient text-black font-bold text-xs uppercase shadow-lg transition active:scale-95">
+                    Confirmar Pagamento & Baixar Comanda
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: FECHAR MESA INTEIRA -->
+    <div id="close-table-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-pitim-card border border-pitim-border rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-pitim-border pb-3">
+                <h3 id="close-table-title" class="font-display font-bold text-xl text-white">Fechar Mesa</h3>
+                <button onclick="closeCloseTableModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-gray-300">
+                Esta ação encerrará todas as comandas e pedidos ativos desta mesa de uma só vez.
+            </p>
+
+            <div class="bg-pitim-dark p-3.5 rounded-xl border border-pitim-border flex justify-between items-center">
+                <span class="text-xs text-gray-400 uppercase font-bold">Total Consolidado da Mesa:</span>
+                <span id="close-table-total" class="text-2xl font-bold text-pitim-gold font-display">R$ 0,00</span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Forma de Pagamento da Mesa</label>
+                <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                    <button type="button" onclick="selectTablePayMethod('PIX')" class="table-pay-btn p-3 rounded-xl border border-pitim-gold bg-pitim-gold/15 text-white flex items-center justify-center gap-1.5">
+                        <span>📱 PIX</span>
+                    </button>
+                    <button type="button" onclick="selectTablePayMethod('Dinheiro')" class="table-pay-btn p-3 rounded-xl border border-pitim-border text-gray-300 flex items-center justify-center gap-1.5">
+                        <span>💵 Dinheiro</span>
+                    </button>
+                    <button type="button" onclick="selectTablePayMethod('Cartão Débito')" class="table-pay-btn p-3 rounded-xl border border-pitim-border text-gray-300 flex items-center justify-center gap-1.5">
+                        <span>💳 Cartão Débito</span>
+                    </button>
+                    <button type="button" onclick="selectTablePayMethod('Cartão Crédito')" class="table-pay-btn p-3 rounded-xl border border-pitim-border text-gray-300 flex items-center justify-center gap-1.5">
+                        <span>💳 Cartão Crédito</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="pt-2">
+                <button onclick="confirmCloseTable()" id="btn-confirm-close-table" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold text-xs uppercase shadow-lg transition active:scale-95">
+                    Fechar Todas as Comandas da Mesa
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: LANÇAMENTO MANUAL DE PEDIDO (GARÇOM / MASTER) -->
+    <div id="manual-order-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-pitim-card border border-pitim-border rounded-3xl w-full max-w-lg p-6 shadow-2xl space-y-4 max-h-[92vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-pitim-border pb-3">
+                <h3 class="font-display font-bold text-xl text-white flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-pitim-gold"></i> Lançar Pedido Manual
+                </h3>
+                <button onclick="closeManualOrderModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 overflow-y-auto flex-1 pr-1">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Preço (R$)</label>
-                        <input type="number" step="0.50" id="form-item-price" placeholder="10.00" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber" required>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Destino</label>
+                        <select id="manual-order-type" onchange="toggleManualOrderType()" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
+                            <option value="table">Mesa Presencial</option>
+                            <option value="delivery">Balcão / Delivery</option>
+                        </select>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Ordem de Exibição</label>
-                        <input type="number" id="form-item-sort" value="0" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber">
+                    <div id="manual-table-box">
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Mesa</label>
+                        <select id="manual-table-num" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
+                            <option value="Mesa 01">Mesa 01</option>
+                            <option value="Mesa 02">Mesa 02</option>
+                            <option value="Mesa 03">Mesa 03</option>
+                            <option value="Mesa 04">Mesa 04</option>
+                            <option value="Mesa 05">Mesa 05</option>
+                            <option value="Mesa 06">Mesa 06</option>
+                            <option value="Mesa 07">Mesa 07</option>
+                            <option value="Mesa 08">Mesa 08</option>
+                            <option value="Mesa 09">Mesa 09</option>
+                            <option value="Mesa 10">Mesa 10</option>
+                            <option value="Mesa 11">Mesa 11</option>
+                            <option value="Mesa 12">Mesa 12</option>
+                            <option value="Mesa 13">Mesa 13</option>
+                            <option value="Mesa 14">Mesa 14</option>
+                            <option value="Mesa 15">Mesa 15</option>
+                            <option value="Mesa Balcão">Mesa Balcão</option>
+                        </select>
                     </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Descrição</label>
-                    <textarea id="form-item-desc" rows="2" placeholder="Ingredientes e detalhes..." class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber resize-none"></textarea>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">URL da Imagem</label>
-                    <input type="text" id="form-item-img" placeholder="/img/... ou https://..." class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white focus:outline-none focus:border-pitim-amber">
-                </div>
-                <div class="flex items-center gap-2 pt-1">
-                    <input type="checkbox" id="form-item-active" checked class="w-4 h-4 rounded text-pitim-amber focus:ring-0">
-                    <label for="form-item-active" class="text-xs font-bold text-gray-300">Item Ativo para Vendas</label>
                 </div>
 
-                <div class="pt-3 border-t border-pitim-border flex gap-2">
-                    <button type="button" onclick="closeItemAdminModal()" class="w-1/2 py-2.5 rounded-xl bg-pitim-card border border-pitim-border text-xs font-bold text-gray-400 hover:text-white">Cancelar</button>
-                    <button type="submit" class="w-1/2 fire-btn text-white font-black py-2.5 rounded-xl text-xs shadow-lg">Salvar Item</button>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Nome do Cliente / Comanda</label>
+                    <input type="text" id="manual-client-name" placeholder="Ex: Wilson" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
+                </div>
+
+                <!-- Item Selector -->
+                <div class="border border-pitim-border rounded-xl p-3 bg-pitim-dark/60 space-y-2">
+                    <label class="block text-xs font-bold text-pitim-gold uppercase">Adicionar Item</label>
+                    <div class="flex gap-2">
+                        <select id="manual-item-select" class="flex-1 p-2 rounded-lg bg-pitim-dark border border-pitim-border text-xs text-white"></select>
+                        <input type="number" id="manual-item-qty" value="1" min="1" class="w-16 p-2 rounded-lg bg-pitim-dark border border-pitim-border text-xs text-white text-center font-bold">
+                        <button type="button" onclick="addManualItemToList()" class="px-3 py-2 bg-pitim-amber text-black font-bold text-xs rounded-lg">
+                            +
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Added Items List -->
+                <div id="manual-items-list" class="space-y-1.5 max-h-36 overflow-y-auto"></div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Observações do Pedido</label>
+                    <input type="text" id="manual-order-notes" placeholder="Ex: Sem cebola, bem passado..." class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-pitim-border flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-gray-400">Total do Pedido:</span>
+                    <p id="manual-order-total" class="text-xl font-bold text-pitim-gold font-display">R$ 0,00</p>
+                </div>
+                <button onclick="submitManualOrder()" id="btn-submit-manual-order" class="px-6 py-3 rounded-xl gold-gradient text-black font-bold text-xs uppercase shadow transition active:scale-95">
+                    Lançar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: ADICIONAR ITEM AO CARDÁPIO -->
+    <div id="add-item-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-pitim-card border border-pitim-border rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-pitim-border pb-3">
+                <h3 class="font-display font-bold text-xl text-white">Novo Item no Cardápio</h3>
+                <button onclick="closeAddItemModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleCreateItem(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Categoria</label>
+                    <select id="new-item-category" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
+                        <option value="Espetos na Brasa">Espetos na Brasa</option>
+                        <option value="Porções & Petiscos">Porções & Petiscos</option>
+                        <option value="Bolinhos Especiais">Bolinhos Especiais</option>
+                        <option value="Cervejas Geladas">Cervejas Geladas</option>
+                        <option value="Refrigerantes & Bebidas">Refrigerantes & Bebidas</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Nome do Item</label>
+                    <input type="text" id="new-item-name" required placeholder="Ex: Cerveja Corona Extra" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Preço (R$)</label>
+                    <input type="number" step="0.50" id="new-item-price" required placeholder="12.00" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Descrição</label>
+                    <textarea id="new-item-desc" rows="2" placeholder="Detalhes do item..." class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeAddItemModal()" class="px-4 py-2 rounded-xl bg-pitim-dark text-white border border-pitim-border text-xs font-bold">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl gold-gradient text-black font-bold text-xs uppercase shadow transition active:scale-95">Salvar Item</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- JavaScript Application Logic -->
     <script>
-        const formatBRL = (val) => Number(val).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
         const adminState = {
-            token: localStorage.getItem('pitim_master_token') || null,
+            token: localStorage.getItem('pitim_master_token') || '',
+            currentTab: 'mesas',
             orders: [],
-            items: [],
-            settings: {},
-            currentTab: 'orders',
+            tables: [],
+            urgentCalls: [],
+            menuItems: [],
             ordersFilter: 'todos',
             audioEnabled: true,
             audioCtx: null,
-            pollingInterval: null,
-            lastKnownOrderCount: 0
+            pollTimer: null,
+            lastKnownOrderCount: 0,
+            lastKnownUrgentCount: 0
         };
 
-        // Initialize Web Audio API Chime Synth
+        function formatMoney(val) {
+            return Number(val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        // Web Audio API Chime Synth
         function initAudio() {
             if (!adminState.audioCtx) {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -424,7 +705,7 @@
             const ctx = adminState.audioCtx;
             const now = ctx.currentTime;
 
-            // Tone 1: 587.33 Hz (D5)
+            // Tone 1: D5 (587.33 Hz)
             const osc1 = ctx.createOscillator();
             const gain1 = ctx.createGain();
             osc1.type = 'sine';
@@ -436,7 +717,7 @@
             osc1.start(now);
             osc1.stop(now + 0.8);
 
-            // Tone 2: 880 Hz (A5)
+            // Tone 2: A5 (880 Hz)
             const osc2 = ctx.createOscillator();
             const gain2 = ctx.createGain();
             osc2.type = 'sine';
@@ -459,7 +740,7 @@
                 playDingSound();
             } else {
                 icon.innerText = '🔕';
-                text.innerText = 'Som Mudo';
+                text.innerText = 'Mudo';
             }
         }
 
@@ -470,202 +751,372 @@
             };
         }
 
-        // Authentication Flow
+        // Login Handler
         async function handleLogin(e) {
             e.preventDefault();
-            const user = document.getElementById('login-user').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            const errDiv = document.getElementById('login-error');
+            const u = document.getElementById('login-user').value.trim();
+            const p = document.getElementById('login-pass').value.trim();
+            const errEl = document.getElementById('login-error');
+            const btn = document.getElementById('login-btn');
+
+            errEl.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerText = "Entrando...";
 
             try {
                 const res = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: user, password: pass })
+                    body: JSON.stringify({ username: u, password: p })
                 });
                 const data = await res.json();
-                if (!res.ok || !data.success) {
-                    throw new Error(data.error || 'Credenciais inválidas');
+                if (res.ok && data.token) {
+                    adminState.token = data.token;
+                    localStorage.setItem('pitim_master_token', data.token);
+                    showDashboard();
+                } else {
+                    errEl.innerText = data.error || 'Credenciais inválidas.';
+                    errEl.classList.remove('hidden');
                 }
-
-                adminState.token = data.token;
-                localStorage.setItem('pitim_master_token', adminState.token);
-                initAudio();
-                checkAuth();
             } catch (err) {
-                errDiv.innerText = err.message;
-                errDiv.classList.remove('hidden');
+                errEl.innerText = 'Erro ao conectar ao servidor.';
+                errEl.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Entrar no Painel Master";
             }
         }
 
         function logout() {
             localStorage.removeItem('pitim_master_token');
-            adminState.token = null;
-            if (adminState.pollingInterval) clearInterval(adminState.pollingInterval);
-            checkAuth();
+            adminState.token = '';
+            if (adminState.pollTimer) clearInterval(adminState.pollTimer);
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('login-view').classList.remove('hidden');
         }
 
-        function checkAuth() {
-            const loginView = document.getElementById('login-view');
-            const dashView = document.getElementById('dashboard-view');
-
-            if (adminState.token) {
-                loginView.classList.add('hidden');
-                dashView.classList.remove('hidden');
-                startPolling();
-                loadDashboardData();
-            } else {
-                loginView.classList.remove('hidden');
-                dashView.classList.add('hidden');
-            }
+        function showDashboard() {
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('dashboard-view').classList.remove('hidden');
+            setTab(adminState.currentTab);
+            startPolling();
         }
 
-        // Navigation Tabs
+        // Tab Switching
         function setTab(tab) {
             adminState.currentTab = tab;
-            ['orders', 'menu', 'settings'].forEach(t => {
+            ['mesas', 'orders', 'feed', 'menu', 'settings'].forEach(t => {
                 const content = document.getElementById(`tab-content-${t}`);
                 const btn = document.getElementById(`tab-btn-${t}`);
-                if (t === tab) {
-                    content.classList.remove('hidden');
-                    btn.className = "px-3.5 py-1.5 rounded-lg bg-pitim-amber text-black transition flex items-center gap-1.5 shadow font-black";
-                } else {
-                    content.classList.add('hidden');
-                    btn.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition flex items-center gap-1.5 font-bold";
+                if (content) content.classList.add('hidden');
+                if (btn) {
+                    btn.classList.remove('bg-pitim-amber', 'text-black');
+                    btn.classList.add('text-gray-400');
                 }
             });
 
-            if (tab === 'menu') loadAdminMenu();
-            if (tab === 'settings') loadAdminSettings();
+            const activeContent = document.getElementById(`tab-content-${tab}`);
+            const activeBtn = document.getElementById(`tab-btn-${tab}`);
+            if (activeContent) activeContent.classList.remove('hidden');
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-400');
+                activeBtn.classList.add('bg-pitim-amber', 'text-black');
+            }
+
+            if (tab === 'mesas') loadActiveTables();
+            if (tab === 'orders' || tab === 'feed') loadOrders();
+            if (tab === 'menu') loadMenuItems();
+            if (tab === 'settings') loadSettings();
         }
 
-        // Polling loop for live orders
+        // Polling loop
         function startPolling() {
-            if (adminState.pollingInterval) clearInterval(adminState.pollingInterval);
-            adminState.pollingInterval = setInterval(loadOrders, 3500);
+            loadActiveTables();
+            loadOrders();
+            if (adminState.pollTimer) clearInterval(adminState.pollTimer);
+            adminState.pollTimer = setInterval(() => {
+                loadActiveTables();
+                loadOrders();
+            }, 3500);
         }
 
-        async function loadDashboardData() {
-            await Promise.all([loadOrders(), loadAdminSettings(), loadAdminMenu()]);
+        // ================= LOAD ACTIVE TABLES & URGENT CALLS =================
+        async function loadActiveTables() {
+            if (!adminState.token) return;
+            try {
+                const res = await fetch('/api/admin/active-tables', { headers: authHeaders() });
+                if (res.status === 401) { logout(); return; }
+                const data = await res.json();
+                adminState.tables = data.tables || [];
+                adminState.urgentCalls = data.urgent_calls || [];
+
+                // Check for new urgent call or new closing request
+                const closingCount = data.closing_requested_count || 0;
+                const callsCount = (adminState.urgentCalls.length || 0) + closingCount;
+                if (callsCount > adminState.lastKnownUrgentCount) {
+                    playDingSound();
+                }
+                adminState.lastKnownUrgentCount = callsCount;
+
+                renderUrgentCalls(adminState.tables, adminState.urgentCalls);
+                renderTablesGrid(adminState.tables);
+                updateStats();
+            } catch (err) {
+                console.error("Erro ao carregar mesas ativas:", err);
+            }
         }
 
-        // Load Orders
+        // Urgent Calls Top Banner
+        function renderUrgentCalls(tables, urgentCalls) {
+            const container = document.getElementById('urgent-calls-container');
+            const items = [];
+
+            // From active tables with closing requested
+            tables.forEach(t => {
+                t.comandas.forEach(c => {
+                    if (c.status === 'closing_requested') {
+                        items.push({
+                            type: 'comanda',
+                            table: t.table_number,
+                            name: c.customer_name,
+                            amount: c.total_amount,
+                            comandaId: c.id
+                        });
+                    }
+                });
+            });
+
+            // From table calls table
+            urgentCalls.forEach(call => {
+                if (call.status === 'pending') {
+                    items.push({
+                        type: 'call',
+                        table: call.table_number,
+                        name: call.customer_name || 'Mesa',
+                        amount: call.total || 0,
+                        callId: call.id,
+                        callType: call.call_type
+                    });
+                }
+            });
+
+            if (items.length === 0) {
+                container.classList.add('hidden');
+                container.innerHTML = '';
+                return;
+            }
+
+            container.classList.remove('hidden');
+            container.innerHTML = items.map(it => `
+                <div class="bg-red-500/20 border-2 border-red-500 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 alert-pulse">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-bell-concierge text-red-400 text-2xl animate-bounce"></i>
+                        <div>
+                            <p class="text-sm font-bold text-white tracking-wide">
+                                🚨 <strong>${it.table}</strong> — Solicitação de Garçom / Fechamento!
+                            </p>
+                            <p class="text-xs text-red-200 mt-0.5">
+                                Cliente: <strong>${it.name}</strong> • Consumo: <strong class="text-white">${formatMoney(it.amount)}</strong>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        ${it.comandaId ? `
+                            <button onclick="openPayModal(${it.comandaId}, '${it.table}', '${it.name}', ${it.amount})" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition">
+                                <i class="fa-solid fa-cash-register"></i> Receber Comanda
+                            </button>
+                        ` : ''}
+                        <button onclick="openCloseTableModal('${it.table}')" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl shadow transition">
+                            <i class="fa-solid fa-users"></i> Fechar Mesa
+                        </button>
+                        ${it.callId ? `
+                            <button onclick="attendCall(${it.callId})" class="px-3 py-2 bg-pitim-dark border border-pitim-border text-gray-300 hover:text-white text-xs rounded-xl">
+                                Dispensar
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function attendCall(callId) {
+            try {
+                await fetch(`/api/admin/table-calls/${callId}/attend`, {
+                    method: 'POST',
+                    headers: authHeaders()
+                });
+                loadActiveTables();
+            } catch (e) {}
+        }
+
+        // Render Active Tables Grid
+        function renderTablesGrid(tables) {
+            const grid = document.getElementById('tables-grid');
+            const emptyEl = document.getElementById('tables-empty');
+
+            if (!tables || tables.length === 0) {
+                grid.innerHTML = '';
+                emptyEl.classList.remove('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            grid.innerHTML = tables.map(t => {
+                const hasClosing = t.has_closing_request;
+                return `
+                    <div class="bg-pitim-card border ${hasClosing ? 'border-red-500 shadow-lg shadow-red-500/20' : 'border-pitim-border'} rounded-2xl p-4 flex flex-col justify-between space-y-4">
+                        <!-- Table Card Header -->
+                        <div class="flex items-center justify-between border-b border-pitim-border pb-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-3 h-3 rounded-full ${hasClosing ? 'bg-red-500 animate-ping' : 'bg-emerald-500'}"></span>
+                                <h4 class="font-display font-bold text-xl text-white tracking-wide">${t.table_number}</h4>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs text-gray-400 font-semibold">${t.comandas.length} comanda(s)</span>
+                                <p class="text-base font-bold text-pitim-gold font-display">${formatMoney(t.table_total)}</p>
+                            </div>
+                        </div>
+
+                        <!-- Comandas inside this table -->
+                        <div class="space-y-2.5 flex-1">
+                            ${t.comandas.map(c => `
+                                <div class="bg-pitim-dark p-3 rounded-xl border ${c.status === 'closing_requested' ? 'border-red-500/80 bg-red-950/20' : 'border-pitim-border'} space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fa-solid fa-user text-xs text-pitim-gold"></i>
+                                            <span class="text-xs font-bold text-white">${c.customer_name}</span>
+                                            ${c.status === 'closing_requested' ? `<span class="bg-red-500/30 text-red-400 text-[10px] font-extrabold px-1.5 py-0.5 rounded border border-red-500/40 animate-pulse">FECHAR 🛎️</span>` : ''}
+                                        </div>
+                                        <span class="text-xs font-bold text-pitim-gold">${formatMoney(c.total_amount)}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-[11px] text-gray-400 pt-1 border-t border-pitim-border/40">
+                                        <span>${c.orders_count || 1} pedido(s) • ${c.items_count || (c.items ? c.items.length : 0)} item(s)</span>
+                                        <div class="flex items-center space-x-2">
+                                            <button onclick="viewComandaDetails(${c.id})" class="text-gray-300 hover:text-white underline font-semibold">
+                                                Ver Itens
+                                            </button>
+                                            <button onclick="openPayModal(${c.id}, '${t.table_number}', '${c.customer_name}', ${c.total_amount})" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500 hover:text-white transition font-bold">
+                                                Receber
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <!-- Bottom table actions -->
+                        <div class="pt-2 border-t border-pitim-border flex items-center justify-between gap-2">
+                            <button onclick="openManualOrderForTable('${t.table_number}')" class="flex-1 bg-[#1c202a] hover:bg-[#252b38] text-white text-xs font-bold py-2.5 px-3 rounded-xl border border-pitim-border flex items-center justify-center gap-1.5 transition">
+                                <i class="fa-solid fa-plus text-[10px] text-pitim-gold"></i> Adicionar Item
+                            </button>
+                            <button onclick="openCloseTableModal('${t.table_number}')" class="flex-1 ${hasClosing ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white animate-pulse' : 'gold-gradient text-black'} text-xs font-bold py-2.5 px-3 rounded-xl shadow flex items-center justify-center gap-1.5 transition transform active:scale-95">
+                                <i class="fa-solid fa-cash-register text-xs"></i> Fechar Mesa
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ================= LOAD ORDERS (DELIVERY & FEED) =================
         async function loadOrders() {
             if (!adminState.token) return;
             try {
                 const res = await fetch('/api/admin/orders', { headers: authHeaders() });
-                if (res.status === 401) return logout();
+                if (res.status === 401) { logout(); return; }
                 const orders = await res.json();
-                
-                // Check if new pending order arrived
-                const pendingOrders = orders.filter(o => o.status === 'Pendente');
-                const badge = document.getElementById('pending-badge');
-                if (pendingOrders.length > 0) {
-                    badge.innerText = pendingOrders.length;
-                    badge.classList.remove('hidden');
-
-                    // If more pending orders than previously, play chime!
-                    if (pendingOrders.length > adminState.lastKnownOrderCount) {
-                        playDingSound();
-                    }
-                } else {
-                    badge.classList.add('hidden');
-                }
-                adminState.lastKnownOrderCount = pendingOrders.length;
-
                 adminState.orders = orders;
-                renderOrders();
-                renderStats();
+
+                // Check for new pending delivery order sound
+                const pendingDeliveryCount = orders.filter(o => o.order_source === 'delivery' && o.status === 'Pendente').length;
+                if (pendingDeliveryCount > adminState.lastKnownOrderCount) {
+                    playDingSound();
+                }
+                adminState.lastKnownOrderCount = pendingDeliveryCount;
+
+                renderDeliveryOrders();
+                renderFeedOrders();
+                updateStats();
             } catch (err) {
                 console.error("Erro ao carregar pedidos:", err);
             }
         }
 
-        function setOrdersFilter(status) {
-            adminState.ordersFilter = status;
-            ['todos', 'pendente', 'preparando', 'concluido'].forEach(s => {
-                const btn = document.getElementById(`filter-${s}`);
-                if (s.toLowerCase() === status.toLowerCase()) {
-                    btn.className = "px-3 py-1.5 rounded-lg bg-pitim-amber text-black shadow font-black";
-                } else {
-                    btn.className = "px-3 py-1.5 rounded-lg text-gray-400 hover:text-white bg-pitim-dark border border-pitim-border font-bold";
+        function setOrdersFilter(f) {
+            adminState.ordersFilter = f;
+            ['todos', 'pendente', 'preparando', 'concluido'].forEach(k => {
+                const btn = document.getElementById(`filter-${k}`);
+                if (btn) {
+                    btn.classList.remove('bg-pitim-amber', 'text-black');
+                    btn.classList.add('text-gray-400', 'bg-pitim-dark');
                 }
             });
-            renderOrders();
+            const activeBtn = document.getElementById(`filter-${f.toLowerCase()}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-400', 'bg-pitim-dark');
+                activeBtn.classList.add('bg-pitim-amber', 'text-black');
+            }
+            renderDeliveryOrders();
         }
 
-        function renderOrders() {
+        function renderDeliveryOrders() {
             const grid = document.getElementById('orders-grid');
-            const empty = document.getElementById('orders-empty');
-            if (!grid) return;
+            const emptyEl = document.getElementById('orders-empty');
 
-            let filtered = adminState.orders;
+            let deliveryList = adminState.orders.filter(o => o.order_source === 'delivery');
             if (adminState.ordersFilter !== 'todos') {
-                filtered = adminState.orders.filter(o => o.status.toLowerCase() === adminState.ordersFilter.toLowerCase());
+                deliveryList = deliveryList.filter(o => o.status === adminState.ordersFilter);
             }
 
-            if (filtered.length === 0) {
+            if (!deliveryList || deliveryList.length === 0) {
                 grid.innerHTML = '';
-                empty.classList.remove('hidden');
+                emptyEl.classList.remove('hidden');
                 return;
             }
 
-            empty.classList.add('hidden');
-
-            grid.innerHTML = filtered.map(ord => {
+            emptyEl.classList.add('hidden');
+            grid.innerHTML = deliveryList.map(ord => {
                 let items = [];
-                try { items = JSON.parse(ord.items_json); } catch(e) {}
+                try { items = JSON.parse(ord.items_json); } catch (e) {}
 
-                const statusBadges = {
-                    'Pendente': 'bg-amber-950/80 border-amber-500/50 text-amber-300 alert-pulse',
-                    'Preparando': 'bg-blue-950/80 border-blue-500/50 text-blue-300',
-                    'Saiu para Entrega': 'bg-purple-950/80 border-purple-500/50 text-purple-300',
-                    'Pronto para Retirada': 'bg-purple-950/80 border-purple-500/50 text-purple-300',
-                    'Concluído': 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300',
-                    'Cancelado': 'bg-red-950/80 border-red-500/50 text-red-400'
-                };
-                const badgeClass = statusBadges[ord.status] || 'bg-gray-800 text-gray-300';
-                const dateStr = new Date(ord.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-                const addr = ord.type === 'delivery' 
+                const addr = ord.type === 'delivery'
                     ? `${ord.customer_address || ''}${ord.customer_number ? ', Nº ' + ord.customer_number : ''}${ord.customer_neighborhood ? ' - ' + ord.customer_neighborhood : ''}${ord.customer_complement ? ' (' + ord.customer_complement + ')' : ''}`
-                    : '🏪 Retirada no Balcão';
+                    : 'Retirada no Balcão';
 
                 return `
-                    <div class="bg-pitim-card border border-pitim-border rounded-2xl p-4 shadow-xl flex flex-col justify-between space-y-3.5 hover:border-pitim-border/80 transition">
-                        <!-- Card Header -->
-                        <div class="flex items-center justify-between border-b border-pitim-border/60 pb-2.5">
-                            <div>
-                                <span class="text-sm font-black text-white">#${ord.id} - ${ord.customer_name}</span>
-                                <div class="text-[11px] text-gray-400 flex items-center gap-1.5 mt-0.5">
-                                    <span>🕒 ${dateStr}</span>
-                                    <span>•</span>
-                                    <span class="font-semibold text-pitim-gold">${ord.type === 'delivery' ? '🛵 Entrega' : '🏪 Retirada'}</span>
-                                </div>
+                    <div class="bg-pitim-card border ${ord.status === 'Pendente' ? 'border-pitim-amber shadow-lg shadow-amber-500/10' : 'border-pitim-border'} rounded-2xl p-4 flex flex-col justify-between space-y-3">
+                        <div class="flex items-center justify-between border-b border-pitim-border pb-2.5">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded text-[11px] font-black ${
+                                    ord.status === 'Pendente' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' :
+                                    ord.status === 'Preparando' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40' :
+                                    ord.status === 'Saiu para Entrega' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/40' :
+                                    'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                                }">${ord.status}</span>
+                                <span class="text-xs font-bold text-gray-400">#${ord.id}</span>
                             </div>
-                            <span class="px-2.5 py-1 rounded-full text-xs font-black border ${badgeClass}">
-                                ${ord.status}
-                            </span>
+                            <span class="text-[11px] text-gray-500">${new Date(ord.created_at).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</span>
                         </div>
 
                         <!-- Customer & Address -->
                         <div class="text-xs space-y-1 bg-pitim-dark/60 p-2.5 rounded-xl border border-pitim-border/50">
                             <div class="text-gray-300 flex items-center justify-between">
-                                <span>📱 ${ord.customer_whatsapp}</span>
-                                <a href="https://wa.me/55${ord.customer_whatsapp.replace(/\D/g, '')}" target="_blank" class="text-emerald-400 hover:underline font-bold text-[11px]">
-                                    Abrir WhatsApp ↗
+                                <span class="font-bold text-white">${ord.customer_name}</span>
+                                <a href="https://wa.me/55${(ord.customer_whatsapp||'').replace(/\D/g, '')}" target="_blank" class="text-emerald-400 hover:underline font-bold text-[11px]">
+                                    WhatsApp ↗
                                 </a>
                             </div>
+                            <div class="text-gray-400 text-[11px]">📱 ${ord.customer_whatsapp}</div>
                             <div class="text-gray-400 text-[11px] leading-tight">📍 ${addr}</div>
                             ${ord.notes ? `<div class="text-pitim-amber text-[11px] italic pt-1">Obs: ${ord.notes}</div>` : ''}
                         </div>
 
                         <!-- Items List -->
-                        <div class="space-y-1 text-xs">
+                        <div class="space-y-1 text-xs max-h-36 overflow-y-auto">
                             ${items.map(it => `
                                 <div class="flex justify-between text-gray-300">
                                     <span><strong>${it.quantity}x</strong> ${it.name} ${it.notes ? `<span class="text-gray-500 italic text-[11px]">(${it.notes})</span>` : ''}</span>
-                                    <span class="text-gray-400">${formatBRL(it.price * it.quantity)}</span>
+                                    <span class="text-gray-400">${formatMoney(it.price * it.quantity)}</span>
                                 </div>
                             `).join('')}
                         </div>
@@ -674,9 +1125,9 @@
                         <div class="pt-2 border-t border-pitim-border flex items-center justify-between text-xs">
                             <div>
                                 <span class="text-[11px] text-gray-400 block">${ord.payment_method}</span>
-                                ${ord.change_for ? `<span class="text-[10px] text-pitim-gold">Troco p/ ${formatBRL(ord.change_for)}</span>` : ''}
+                                ${ord.change_for ? `<span class="text-[10px] text-pitim-gold">Troco p/ ${formatMoney(ord.change_for)}</span>` : ''}
                             </div>
-                            <span class="text-base font-black text-pitim-gold">${formatBRL(ord.total)}</span>
+                            <span class="text-base font-black text-pitim-gold font-display">${formatMoney(ord.total)}</span>
                         </div>
 
                         <!-- Action Buttons -->
@@ -709,15 +1160,80 @@
             }).join('');
         }
 
-        function renderStats() {
-            const todayOrders = adminState.orders;
-            const totalCount = todayOrders.length;
-            const revenue = todayOrders
+        // Render Feed Unificado
+        function renderFeedOrders() {
+            const list = document.getElementById('feed-list');
+            if (!adminState.orders || adminState.orders.length === 0) {
+                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-8">Nenhum pedido registrado hoje.</p>`;
+                return;
+            }
+
+            list.innerHTML = adminState.orders.map(o => {
+                let items = [];
+                try { items = JSON.parse(o.items_json); } catch (e) {}
+
+                const isTable = (o.order_source === 'table' || o.table_number);
+                return `
+                    <div class="bg-pitim-card border border-pitim-border rounded-xl p-3 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center space-x-3">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-black ${
+                                isTable ? 'bg-amber-500/20 text-pitim-gold border border-amber-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                            }">
+                                ${isTable ? `🪑 ${o.table_number || 'Mesa'}` : '🛵 DELIVERY'}
+                            </span>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">${o.customer_name}</h4>
+                                <p class="text-[11px] text-gray-400">
+                                    Pedido #${o.id} • ${new Date(o.created_at).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})} • ${items.length} item(s)
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right">
+                                <span class="text-xs font-bold text-pitim-gold font-display">${formatMoney(o.total)}</span>
+                                <span class="block text-[10px] text-gray-400">${o.status}</span>
+                            </div>
+                            <button onclick="printOrder(${o.id})" class="p-2 rounded-lg bg-pitim-dark border border-pitim-border text-gray-300 hover:text-white" title="Imprimir Comanda">
+                                🖨️
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update Header Stats
+        function updateStats() {
+            const activeTablesCount = adminState.tables ? adminState.tables.length : 0;
+            const pendingDeliveryCount = adminState.orders.filter(o => o.order_source === 'delivery' && o.status === 'Pendente').length;
+            const totalOrdersCount = adminState.orders.length;
+
+            const revenueDelivery = adminState.orders
                 .filter(o => o.status !== 'Cancelado')
                 .reduce((s, o) => s + Number(o.total || 0), 0);
 
-            document.getElementById('stats-total-orders').innerText = totalCount;
-            document.getElementById('stats-total-revenue').innerText = formatBRL(revenue);
+            document.getElementById('stats-active-tables').innerText = activeTablesCount;
+            document.getElementById('stats-delivery-pending').innerText = pendingDeliveryCount;
+            document.getElementById('stats-total-orders').innerText = totalOrdersCount;
+            document.getElementById('stats-total-revenue').innerText = formatMoney(revenueDelivery);
+
+            // Badges in navbar
+            const tabTablesBadge = document.getElementById('active-tables-badge');
+            if (activeTablesCount > 0) {
+                tabTablesBadge.innerText = activeTablesCount;
+                tabTablesBadge.classList.remove('hidden');
+            } else {
+                tabTablesBadge.classList.add('hidden');
+            }
+
+            const tabPendingBadge = document.getElementById('pending-badge');
+            if (pendingDeliveryCount > 0) {
+                tabPendingBadge.innerText = pendingDeliveryCount;
+                tabPendingBadge.classList.remove('hidden');
+            } else {
+                tabPendingBadge.classList.add('hidden');
+            }
         }
 
         async function updateOrderStatus(id, newStatus) {
@@ -740,339 +1256,620 @@
                     method: 'DELETE',
                     headers: authHeaders()
                 });
-                if (res.ok) loadOrders();
+                if (res.ok) {
+                    loadOrders();
+                    loadActiveTables();
+                }
             } catch (err) {
                 alert('Erro ao excluir pedido: ' + err.message);
             }
         }
 
-        // Thermal Receipt Print
-        function printOrder(id) {
-            const ord = adminState.orders.find(o => o.id === id);
-            if (!ord) return;
+        // ================= COMANDA DETAILS MODAL =================
+        function viewComandaDetails(comandaId) {
+            let foundComanda = null;
+            let tableNum = '';
+            adminState.tables.forEach(t => {
+                const c = t.comandas.find(x => x.id === comandaId);
+                if (c) {
+                    foundComanda = c;
+                    tableNum = t.table_number;
+                }
+            });
 
-            let items = [];
-            try { items = JSON.parse(ord.items_json); } catch(e) {}
-            const dateStr = new Date(ord.created_at).toLocaleString('pt-BR');
+            if (!foundComanda) return;
 
-            const container = document.getElementById('print-receipt');
-            container.innerHTML = `
-                <div style="text-align: center; border-bottom: 1px dashed black; padding-bottom: 5px; margin-bottom: 8px;">
-                    <h2 style="margin: 0; font-size: 16px; font-weight: bold;">PITIM PETISCARIA & ESPETOS</h2>
-                    <p style="margin: 2px 0; font-size: 11px;">Comanda de Pedido #${ord.id}</p>
-                    <p style="margin: 0; font-size: 10px;">${dateStr}</p>
-                </div>
-                <div style="font-size: 12px; margin-bottom: 8px;">
-                    <strong>CLIENTE:</strong> ${ord.customer_name}<br>
-                    <strong>FONE:</strong> ${ord.customer_whatsapp}<br>
-                    <strong>TIPO:</strong> ${ord.type === 'delivery' ? 'ENTREGA EM DOMICÍLIO' : 'RETIRADA NO BALCÃO'}<br>
-                    ${ord.type === 'delivery' ? `<strong>ENDEREÇO:</strong> ${ord.customer_address}, Nº ${ord.customer_number || ''} ${ord.customer_neighborhood || ''} ${ord.customer_complement ? '('+ord.customer_complement+')' : ''}<br>` : ''}
-                    ${ord.notes ? `<strong>OBS:</strong> ${ord.notes}<br>` : ''}
-                </div>
-                <div style="border-top: 1px dashed black; border-bottom: 1px dashed black; padding: 6px 0; margin-bottom: 8px;">
-                    <table style="width: 100%; font-size: 12px; text-align: left;">
-                        ${items.map(it => `
-                            <tr>
-                                <td style="vertical-align: top;">${it.quantity}x ${it.name} ${it.notes ? '<br><small>('+it.notes+')</small>' : ''}</td>
-                                <td style="text-align: right; vertical-align: top;">${formatBRL(it.price * it.quantity)}</td>
-                            </tr>
-                        `).join('')}
-                    </table>
-                </div>
-                <div style="font-size: 12px; text-align: right; line-height: 1.4;">
-                    Subtotal: ${formatBRL(ord.subtotal)}<br>
-                    Taxa de Entrega: ${formatBRL(ord.delivery_fee)}<br>
-                    <strong style="font-size: 14px;">TOTAL: ${formatBRL(ord.total)}</strong><br>
-                    Pagamento: ${ord.payment_method} ${ord.change_for ? '(Troco p/ '+formatBRL(ord.change_for)+')' : ''}
-                </div>
-                <div style="text-align: center; margin-top: 12px; font-size: 10px; border-top: 1px dashed black; padding-top: 5px;">
-                    Agradecemos a preferência!
-                </div>
-            `;
-            window.print();
+            document.getElementById('modal-comanda-title').innerText = `${tableNum} • ${foundComanda.customer_name}`;
+            document.getElementById('modal-comanda-subtitle').innerText = `Comanda #${foundComanda.id} • Status: ${foundComanda.status}`;
+            document.getElementById('modal-comanda-total').innerText = formatMoney(foundComanda.total_amount);
+
+            const itemsContainer = document.getElementById('modal-comanda-items');
+            if (!foundComanda.items || foundComanda.items.length === 0) {
+                itemsContainer.innerHTML = `<p class="text-xs text-gray-400 py-4 text-center">Nenhum item consumido registrado.</p>`;
+            } else {
+                itemsContainer.innerHTML = foundComanda.items.map(it => `
+                    <div class="bg-pitim-dark p-3 rounded-xl border border-pitim-border flex items-center justify-between gap-3 text-xs">
+                        <div>
+                            <span class="font-bold text-white">${it.quantity}x ${it.product_name}</span>
+                            ${it.notes ? `<p class="text-[10px] text-amber-400 italic">Obs: ${it.notes}</p>` : ''}
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="font-bold text-pitim-gold">${formatMoney(it.subtotal)}</span>
+                            <select onchange="updateItemStatus(${it.id}, this.value)" class="bg-[#1a1e27] text-white text-[10px] font-bold p-1 rounded-lg border border-pitim-border">
+                                <option value="received" ${it.status==='received'?'selected':''}>Recebido</option>
+                                <option value="preparing" ${it.status==='preparing'?'selected':''}>Em Preparo</option>
+                                <option value="delivered" ${it.status==='delivered'?'selected':''}>Entregue</option>
+                            </select>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('comanda-details-modal').classList.remove('hidden');
         }
 
-        // TAB 2: MENU & PRICES MANAGEMENT
-        async function loadAdminMenu() {
+        function closeComandaDetailsModal() {
+            document.getElementById('comanda-details-modal').classList.add('hidden');
+        }
+
+        async function updateItemStatus(itemId, newStatus) {
             try {
-                const res = await fetch('/api/admin/items', { headers: authHeaders() });
-                adminState.items = await res.json();
-                renderAdminMenu();
-            } catch (err) {
-                console.error("Erro ao carregar cardápio admin:", err);
+                await fetch(`/api/admin/order-item/${itemId}/status`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ status: newStatus })
+                });
+                loadActiveTables();
+            } catch (e) {}
+        }
+
+        // ================= RECEBER COMANDA INDIVIDUAL =================
+        let payingComanda = null;
+        let selectedPayMethod = 'PIX';
+
+        function openPayModal(comandaId, table, name, amount) {
+            payingComanda = { id: comandaId, table, name, amount };
+            selectedPayMethod = 'PIX';
+            selectPayMethod('PIX');
+
+            document.getElementById('pay-table').innerText = table;
+            document.getElementById('pay-name').innerText = name;
+            document.getElementById('pay-amount').innerText = formatMoney(amount);
+            document.getElementById('pay-modal').classList.remove('hidden');
+        }
+
+        function closePayModal() {
+            document.getElementById('pay-modal').classList.add('hidden');
+            payingComanda = null;
+        }
+
+        function selectPayMethod(m) {
+            selectedPayMethod = m;
+            document.querySelectorAll('.pay-method-btn').forEach(btn => {
+                if (btn.innerText.includes(m)) {
+                    btn.classList.add('border-pitim-gold', 'bg-pitim-gold/15', 'text-white');
+                    btn.classList.remove('border-pitim-border', 'text-gray-300');
+                } else {
+                    btn.classList.remove('border-pitim-gold', 'bg-pitim-gold/15', 'text-white');
+                    btn.classList.add('border-pitim-border', 'text-gray-300');
+                }
+            });
+        }
+
+        async function confirmPayment() {
+            if (!payingComanda) return;
+            const btn = document.getElementById('btn-confirm-payment');
+            btn.disabled = true;
+            btn.innerText = "Finalizando...";
+
+            try {
+                const res = await fetch(`/api/admin/comanda/${payingComanda.id}/status`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({
+                        status: 'paid',
+                        payment_method: selectedPayMethod
+                    })
+                });
+                if (res.ok) {
+                    closePayModal();
+                    loadActiveTables();
+                    loadOrders();
+                } else {
+                    alert("Erro ao finalizar pagamento.");
+                }
+            } catch (e) {
+                alert("Erro de conexão.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Confirmar Pagamento & Baixar Comanda";
             }
         }
 
-        function renderAdminMenu() {
-            const container = document.getElementById('admin-menu-list');
-            if (!container) return;
+        // ================= FECHAR MESA INTEIRA =================
+        let closingTable = null;
+        let selectedTablePayMethod = 'PIX';
 
-            const groups = {};
-            adminState.items.forEach(it => {
-                if (!groups[it.category]) groups[it.category] = [];
-                groups[it.category].push(it);
+        function openCloseTableModal(tableNumber) {
+            const t = adminState.tables.find(x => x.table_number.toLowerCase().trim() === tableNumber.toLowerCase().trim());
+            if (!t) return;
+            closingTable = t;
+            selectedTablePayMethod = 'PIX';
+            selectTablePayMethod('PIX');
+
+            document.getElementById('close-table-title').innerText = `Fechar ${t.table_number}`;
+            document.getElementById('close-table-total').innerText = formatMoney(t.table_total);
+            document.getElementById('close-table-modal').classList.remove('hidden');
+        }
+
+        function closeCloseTableModal() {
+            document.getElementById('close-table-modal').classList.add('hidden');
+            closingTable = null;
+        }
+
+        function selectTablePayMethod(m) {
+            selectedTablePayMethod = m;
+            document.querySelectorAll('.table-pay-btn').forEach(btn => {
+                if (btn.innerText.includes(m)) {
+                    btn.classList.add('border-pitim-gold', 'bg-pitim-gold/15', 'text-white');
+                    btn.classList.remove('border-pitim-border', 'text-gray-300');
+                } else {
+                    btn.classList.remove('border-pitim-gold', 'bg-pitim-gold/15', 'text-white');
+                    btn.classList.add('border-pitim-border', 'text-gray-300');
+                }
             });
+        }
 
-            container.innerHTML = Object.entries(groups).map(([cat, items]) => `
-                <div class="bg-pitim-card border border-pitim-border rounded-2xl p-4 shadow space-y-3">
-                    <div class="flex items-center justify-between border-b border-pitim-border pb-2">
-                        <h3 class="text-sm font-black text-pitim-amber uppercase tracking-wider">${cat}</h3>
-                        <span class="text-xs text-gray-500">${items.length} itens</span>
-                    </div>
-                    <div class="divide-y divide-pitim-border/50">
-                        ${items.map(it => `
-                            <div class="py-2.5 flex flex-wrap items-center justify-between gap-3 ${it.active ? '' : 'opacity-50'}">
-                                <div class="flex items-center gap-3">
-                                    <img src="${it.image_url || '/img/logo.png'}" class="w-10 h-10 object-cover rounded-lg bg-pitim-dark border border-pitim-border">
-                                    <div>
-                                        <div class="text-xs font-bold text-white flex items-center gap-1.5">
-                                            <span>${it.name}</span>
-                                            ${!it.active ? '<span class="text-[10px] bg-red-950 text-red-400 px-1.5 py-0.2 rounded border border-red-500/30">Esgotado</span>' : ''}
-                                        </div>
-                                        <div class="text-[11px] text-gray-400 line-clamp-1">${it.description || ''}</div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <div class="flex items-center gap-1">
-                                        <span class="text-xs text-gray-500">R$</span>
-                                        <input 
-                                            type="number" 
-                                            step="0.50" 
-                                            value="${Number(it.price).toFixed(2)}" 
-                                            onchange="quickUpdatePrice(${it.id}, this.value)"
-                                            class="w-20 p-1.5 rounded-lg bg-pitim-dark border border-pitim-border text-xs font-bold text-pitim-gold text-right focus:border-pitim-amber focus:outline-none"
-                                        >
-                                    </div>
-                                    <button onclick="toggleItemActive(${it.id}, ${it.active ? 0 : 1})" class="p-1.5 rounded-lg text-xs font-bold ${it.active ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30' : 'bg-red-950/60 text-red-400 border border-red-500/30'}">
-                                        ${it.active ? 'Ativo' : 'Pausado'}
-                                    </button>
-                                    <button onclick="openEditItemModal(${it.id})" class="p-1.5 text-xs text-gray-400 hover:text-white" title="Editar Completo">
-                                        ✏️
-                                    </button>
-                                    <button onclick="deleteMenuItem(${it.id})" class="p-1.5 text-xs text-red-400 hover:text-red-300" title="Excluir Item">
-                                        🗑️
-                                    </button>
-                                </div>
-                            </div>
-                        `).join('')}
+        async function confirmCloseTable() {
+            if (!closingTable) return;
+            const btn = document.getElementById('btn-confirm-close-table');
+            btn.disabled = true;
+            btn.innerText = "Encerrando Mesa...";
+
+            try {
+                const res = await fetch(`/api/admin/table/${encodeURIComponent(closingTable.table_number)}/close`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ payment_method: selectedTablePayMethod })
+                });
+                if (res.ok) {
+                    closeCloseTableModal();
+                    loadActiveTables();
+                    loadOrders();
+                } else {
+                    alert("Erro ao encerrar mesa.");
+                }
+            } catch (e) {
+                alert("Erro de conexão.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Fechar Todas as Comandas da Mesa";
+            }
+        }
+
+        // ================= LANÇAMENTO MANUAL DE PEDIDO =================
+        let manualCart = [];
+
+        function openManualOrderModal(defaultType = 'table') {
+            manualCart = [];
+            document.getElementById('manual-order-type').value = defaultType;
+            toggleManualOrderType();
+            renderManualCart();
+            populateManualProductSelect();
+            document.getElementById('manual-order-modal').classList.remove('hidden');
+        }
+
+        function openManualOrderForTable(tableNumber) {
+            openManualOrderModal('table');
+            document.getElementById('manual-table-num').value = tableNumber;
+            document.getElementById('manual-client-name').value = `Mesa ${tableNumber}`;
+        }
+
+        function closeManualOrderModal() {
+            document.getElementById('manual-order-modal').classList.add('hidden');
+        }
+
+        function toggleManualOrderType() {
+            const type = document.getElementById('manual-order-type').value;
+            const tableBox = document.getElementById('manual-table-box');
+            if (type === 'table') {
+                tableBox.classList.remove('hidden');
+            } else {
+                tableBox.classList.add('hidden');
+            }
+        }
+
+        async function populateManualProductSelect() {
+            if (adminState.menuItems.length === 0) {
+                await loadMenuItems();
+            }
+            const sel = document.getElementById('manual-item-select');
+            sel.innerHTML = adminState.menuItems.map(it => `
+                <option value="${it.id}">${it.name} - ${formatMoney(it.price)}</option>
+            `).join('');
+        }
+
+        function addManualItemToList() {
+            const sel = document.getElementById('manual-item-select');
+            const qty = parseInt(document.getElementById('manual-item-qty').value) || 1;
+            const itemId = parseInt(sel.value);
+            const item = adminState.menuItems.find(x => x.id === itemId);
+            if (!item) return;
+
+            manualCart.push({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: qty
+            });
+            renderManualCart();
+        }
+
+        function removeManualItem(idx) {
+            manualCart.splice(idx, 1);
+            renderManualCart();
+        }
+
+        function renderManualCart() {
+            const container = document.getElementById('manual-items-list');
+            const totalEl = document.getElementById('manual-order-total');
+
+            const total = manualCart.reduce((s, it) => s + (it.price * it.quantity), 0);
+            totalEl.innerText = formatMoney(total);
+
+            if (manualCart.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 italic py-2">Nenhum item adicionado ao pedido.</p>`;
+                return;
+            }
+
+            container.innerHTML = manualCart.map((it, idx) => `
+                <div class="flex items-center justify-between text-xs bg-pitim-dark p-2 rounded-lg border border-pitim-border">
+                    <span class="text-white"><strong>${it.quantity}x</strong> ${it.name}</span>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-pitim-gold font-bold">${formatMoney(it.price * it.quantity)}</span>
+                        <button onclick="removeManualItem(${idx})" class="text-red-400 hover:text-red-300">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </div>
                 </div>
             `).join('');
         }
 
-        async function quickUpdatePrice(id, newPrice) {
+        async function submitManualOrder() {
+            if (manualCart.length === 0) {
+                alert("Adicione pelo menos um item ao pedido.");
+                return;
+            }
+
+            const type = document.getElementById('manual-order-type').value;
+            const table = document.getElementById('manual-table-num').value;
+            const name = document.getElementById('manual-client-name').value.trim() || (type === 'table' ? table : 'Cliente Balcão');
+            const notes = document.getElementById('manual-order-notes').value.trim();
+
+            const btn = document.getElementById('btn-submit-manual-order');
+            btn.disabled = true;
+            btn.innerText = "Lançando...";
+
             try {
-                await fetch(`/api/admin/items/${id}`, {
-                    method: 'PUT',
+                const res = await fetch('/api/admin/manual-order', {
+                    method: 'POST',
                     headers: authHeaders(),
-                    body: JSON.stringify({ price: parseFloat(newPrice) })
+                    body: JSON.stringify({
+                        order_source: type,
+                        table_number: type === 'table' ? table : null,
+                        customer_name: name,
+                        items: manualCart,
+                        notes: notes
+                    })
                 });
-            } catch (err) {
-                alert('Erro ao alterar preço: ' + err.message);
+
+                if (res.ok) {
+                    closeManualOrderModal();
+                    loadActiveTables();
+                    loadOrders();
+                } else {
+                    const d = await res.json();
+                    alert(d.error || "Erro ao lançar pedido.");
+                }
+            } catch (e) {
+                alert("Erro de conexão.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Lançar Pedido";
             }
         }
 
-        async function toggleItemActive(id, newActive) {
+        // ================= IMPRESSÃO TÉRMICA 80MM =================
+        function printOrder(id) {
+            const ord = adminState.orders.find(o => o.id === id);
+            if (!ord) return;
+
+            let items = [];
+            try { items = JSON.parse(ord.items_json); } catch (e) {}
+
+            const isTable = (ord.order_source === 'table' || ord.table_number);
+            const printEl = document.getElementById('print-receipt');
+            printEl.innerHTML = `
+                <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+                    PITIM PETISCARIA & ESPETOS
+                </div>
+                <div style="text-align: center; font-size: 11px; margin-bottom: 10px;">
+                    ${isTable ? `*** COMANDA ${ord.table_number || 'MESA'} ***` : '*** PEDIDO DELIVERY ***'}
+                </div>
+                <div style="border-bottom: 1px dashed black; margin-bottom: 8px;"></div>
+                <div><strong>PEDIDO #${ord.id}</strong></div>
+                <div>Data: ${new Date(ord.created_at).toLocaleString('pt-BR')}</div>
+                <div>Cliente: ${ord.customer_name}</div>
+                ${ord.customer_whatsapp ? `<div>WhatsApp: ${ord.customer_whatsapp}</div>` : ''}
+                ${!isTable && ord.customer_address ? `<div>End: ${ord.customer_address}, ${ord.customer_number || ''}</div>` : ''}
+                ${!isTable && ord.customer_neighborhood ? `<div>Bairro: ${ord.customer_neighborhood}</div>` : ''}
+                <div style="border-bottom: 1px dashed black; margin: 8px 0;"></div>
+                <div style="font-weight: bold; margin-bottom: 5px;">ITENS:</div>
+                ${items.map(it => `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>${it.quantity}x ${it.name}</span>
+                        <span>${formatMoney(it.price * it.quantity)}</span>
+                    </div>
+                    ${it.notes ? `<div style="font-size: 10px; font-style: italic; margin-left: 10px;">Obs: ${it.notes}</div>` : ''}
+                `).join('')}
+                <div style="border-bottom: 1px dashed black; margin: 8px 0;"></div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Subtotal:</span>
+                    <span>${formatMoney(ord.subtotal)}</span>
+                </div>
+                ${ord.delivery_fee ? `
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Taxa de Entrega:</span>
+                        <span>${formatMoney(ord.delivery_fee)}</span>
+                    </div>
+                ` : ''}
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; margin-top: 4px;">
+                    <span>TOTAL:</span>
+                    <span>${formatMoney(ord.total)}</span>
+                </div>
+                <div style="margin-top: 5px;">Pagamento: ${ord.payment_method}</div>
+                ${ord.change_for ? `<div>Troco para: ${formatMoney(ord.change_for)}</div>` : ''}
+                ${ord.notes ? `<div style="margin-top: 5px;">Obs Geral: ${ord.notes}</div>` : ''}
+                <div style="border-bottom: 1px dashed black; margin: 10px 0;"></div>
+                <div style="text-align: center; font-size: 10px;">Obrigado pela preferência! Volte sempre.</div>
+            `;
+
+            window.print();
+        }
+
+        // ================= GERENCIAR CARDÁPIO & PREÇOS =================
+        async function loadMenuItems() {
             try {
-                await fetch(`/api/admin/items/${id}`, {
+                const res = await fetch('/api/admin/items', { headers: authHeaders() });
+                if (res.ok) {
+                    adminState.menuItems = await res.json();
+                    renderMenuTable();
+                }
+            } catch (err) {
+                console.error("Erro ao carregar cardápio:", err);
+            }
+        }
+
+        function renderMenuTable() {
+            const tableEl = document.getElementById('menu-items-table');
+            if (adminState.menuItems.length === 0) {
+                tableEl.innerHTML = `<p class="p-6 text-center text-xs text-gray-500">Nenhum item cadastrado.</p>`;
+                return;
+            }
+
+            tableEl.innerHTML = `
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-gray-300">
+                        <thead class="bg-pitim-dark/80 text-[11px] uppercase tracking-wider text-gray-400 border-b border-pitim-border">
+                            <tr>
+                                <th class="p-3">Item</th>
+                                <th class="p-3">Categoria</th>
+                                <th class="p-3">Preço Atual</th>
+                                <th class="p-3 text-center">Status</th>
+                                <th class="p-3 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-pitim-border/50">
+                            ${adminState.menuItems.map(it => `
+                                <tr class="hover:bg-pitim-cardHover transition">
+                                    <td class="p-3 font-bold text-white flex items-center gap-2">
+                                        <img src="${it.image_url || '/img/logo.png'}" class="w-8 h-8 rounded-lg object-cover bg-black/50">
+                                        <div>
+                                            <span>${it.name}</span>
+                                            ${it.description ? `<p class="text-[10px] text-gray-500 line-clamp-1">${it.description}</p>` : ''}
+                                        </div>
+                                    </td>
+                                    <td class="p-3 text-gray-400">${it.category}</td>
+                                    <td class="p-3">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-pitim-gold font-bold">R$</span>
+                                            <input 
+                                                type="number" 
+                                                step="0.50" 
+                                                value="${Number(it.price).toFixed(2)}"
+                                                id="price-input-${it.id}"
+                                                class="w-20 p-1.5 rounded-lg bg-pitim-dark border border-pitim-border text-xs text-white font-bold text-right"
+                                                onchange="quickUpdatePrice(${it.id})"
+                                            >
+                                        </div>
+                                    </td>
+                                    <td class="p-3 text-center">
+                                        <button onclick="toggleItemActive(${it.id}, ${it.active ? 0 : 1})" class="px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                            it.active ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-red-500/20 text-red-400 border border-red-500/40'
+                                        }">
+                                            ${it.active ? 'Ativo' : 'Pausado'}
+                                        </button>
+                                    </td>
+                                    <td class="p-3 text-right">
+                                        <button onclick="deleteMenuItem(${it.id})" class="p-1.5 text-gray-500 hover:text-red-400 transition" title="Excluir Item">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        async function quickUpdatePrice(id) {
+            const input = document.getElementById(`price-input-${id}`);
+            const newPrice = parseFloat(input.value);
+            if (isNaN(newPrice) || newPrice < 0) return;
+
+            try {
+                const res = await fetch(`/api/admin/items/${id}`, {
                     method: 'PUT',
                     headers: authHeaders(),
-                    body: JSON.stringify({ active: newActive })
+                    body: JSON.stringify({ price: newPrice })
                 });
-                loadAdminMenu();
+                if (res.ok) {
+                    input.classList.add('border-emerald-500');
+                    setTimeout(() => input.classList.remove('border-emerald-500'), 1500);
+                }
             } catch (err) {
-                alert('Erro ao alternar status do item: ' + err.message);
+                alert('Erro ao atualizar preço.');
+            }
+        }
+
+        async function toggleItemActive(id, newStatus) {
+            try {
+                const res = await fetch(`/api/admin/items/${id}`, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ active: newStatus })
+                });
+                if (res.ok) loadMenuItems();
+            } catch (err) {
+                alert('Erro ao alterar status.');
             }
         }
 
         async function deleteMenuItem(id) {
-            if (!confirm('Deseja excluir este item permanentemente do cardápio?')) return;
+            if (!confirm('Excluir este item do cardápio permanentemente?')) return;
             try {
-                await fetch(`/api/admin/items/${id}`, {
+                const res = await fetch(`/api/admin/items/${id}`, {
                     method: 'DELETE',
                     headers: authHeaders()
                 });
-                loadAdminMenu();
+                if (res.ok) loadMenuItems();
             } catch (err) {
-                alert('Erro ao excluir item: ' + err.message);
+                alert('Erro ao excluir item.');
             }
         }
 
         function openAddItemModal() {
-            document.getElementById('modal-item-title').innerText = "Novo Item no Cardápio";
-            document.getElementById('form-item-id').value = "";
-            document.getElementById('form-item-category').value = "";
-            document.getElementById('form-item-name').value = "";
-            document.getElementById('form-item-price').value = "";
-            document.getElementById('form-item-sort').value = "0";
-            document.getElementById('form-item-desc').value = "";
-            document.getElementById('form-item-img').value = "";
-            document.getElementById('form-item-active').checked = true;
-            document.getElementById('item-admin-modal').classList.remove('hidden');
+            document.getElementById('add-item-modal').classList.remove('hidden');
         }
 
-        function openEditItemModal(id) {
-            const it = adminState.items.find(i => i.id === id);
-            if (!it) return;
-
-            document.getElementById('modal-item-title').innerText = "Editar Item";
-            document.getElementById('form-item-id').value = it.id;
-            document.getElementById('form-item-category').value = it.category;
-            document.getElementById('form-item-name').value = it.name;
-            document.getElementById('form-item-price').value = it.price;
-            document.getElementById('form-item-sort').value = it.sort_order || 0;
-            document.getElementById('form-item-desc').value = it.description || '';
-            document.getElementById('form-item-img').value = it.image_url || '';
-            document.getElementById('form-item-active').checked = it.active === 1;
-            document.getElementById('item-admin-modal').classList.remove('hidden');
+        function closeAddItemModal() {
+            document.getElementById('add-item-modal').classList.add('hidden');
         }
 
-        function closeItemAdminModal() {
-            document.getElementById('item-admin-modal').classList.add('hidden');
-        }
-
-        async function saveItemForm(e) {
+        async function handleCreateItem(e) {
             e.preventDefault();
-            const id = document.getElementById('form-item-id').value;
-            const category = document.getElementById('form-item-category').value.trim();
-            const name = document.getElementById('form-item-name').value.trim();
-            const price = parseFloat(document.getElementById('form-item-price').value);
-            const sort_order = parseInt(document.getElementById('form-item-sort').value) || 0;
-            const description = document.getElementById('form-item-desc').value.trim();
-            const image_url = document.getElementById('form-item-img').value.trim();
-            const active = document.getElementById('form-item-active').checked ? 1 : 0;
-
-            const payload = { category, name, price, sort_order, description, image_url, active };
+            const cat = document.getElementById('new-item-category').value;
+            const name = document.getElementById('new-item-name').value.trim();
+            const price = parseFloat(document.getElementById('new-item-price').value);
+            const desc = document.getElementById('new-item-desc').value.trim();
 
             try {
-                const url = id ? `/api/admin/items/${id}` : `/api/admin/items`;
-                const method = id ? 'PUT' : 'POST';
-                const res = await fetch(url, {
-                    method: method,
+                const res = await fetch('/api/admin/items', {
+                    method: 'POST',
                     headers: authHeaders(),
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ category: cat, name, price, description: desc, active: 1 })
                 });
                 if (res.ok) {
-                    closeItemAdminModal();
-                    loadAdminMenu();
+                    closeAddItemModal();
+                    loadMenuItems();
                 } else {
-                    const data = await res.json();
-                    alert('Erro: ' + (data.error || 'Falha ao salvar'));
+                    alert('Erro ao criar item.');
                 }
             } catch (err) {
-                alert('Erro ao salvar item: ' + err.message);
+                alert('Erro de conexão ao criar item.');
             }
         }
 
-        // TAB 3: SETTINGS
-        async function loadAdminSettings() {
+        // ================= CONFIGURAÇÕES & DISPARO HTTP =================
+        async function loadSettings() {
             try {
                 const res = await fetch('/api/admin/settings', { headers: authHeaders() });
-                const s = await res.json();
-                adminState.settings = s;
-
-                // Status Button
-                const btn = document.getElementById('store-status-btn');
-                if (s.is_open === '1') {
-                    btn.className = "px-4 py-2 rounded-xl text-xs font-black transition shadow bg-emerald-600 text-white hover:bg-emerald-500";
-                    btn.innerText = "🟢 Loja Aberta";
-                } else {
-                    btn.className = "px-4 py-2 rounded-xl text-xs font-black transition shadow bg-red-600 text-white hover:bg-red-500";
-                    btn.innerText = "🔴 Loja Fechada";
+                if (res.ok) {
+                    const s = await res.json();
+                    document.getElementById('setting-is-open').value = s.is_open || '1';
+                    document.getElementById('setting-delivery-fee').value = s.delivery_fee || '8.00';
+                    document.getElementById('setting-delivery-time').value = s.delivery_time || '';
+                    document.getElementById('setting-pix-key').value = s.pix_key || '';
+                    document.getElementById('setting-http-enabled').checked = s.direct_http_enabled === '1';
+                    document.getElementById('setting-http-url').value = s.direct_http_url || '';
+                    document.getElementById('setting-http-method').value = s.direct_http_method || 'POST';
                 }
-
-                document.getElementById('setting-delivery-fee').value = s.delivery_fee || '8.00';
-                document.getElementById('setting-delivery-time').value = s.delivery_time || '40 a 50 minutos';
-                document.getElementById('setting-pix-key').value = s.pix_key || '';
-                document.getElementById('setting-pix-name').value = s.pix_name || '';
-
-                document.getElementById('setting-http-enabled').checked = s.direct_http_enabled !== '0';
-                document.getElementById('setting-http-url').value = s.direct_http_url || '';
-                document.getElementById('setting-http-method').value = s.direct_http_method || 'POST';
-                document.getElementById('setting-http-headers').value = s.direct_http_headers || '{"Content-Type": "application/json"}';
-
             } catch (err) {
-                console.error("Erro ao carregar configurações:", err);
+                console.error(err);
             }
         }
 
-        async function toggleStoreOpen() {
-            const current = adminState.settings.is_open === '1';
-            const newVal = current ? '0' : '1';
-            try {
-                await fetch('/api/admin/settings', {
-                    method: 'PUT',
-                    headers: authHeaders(),
-                    body: JSON.stringify({ is_open: newVal })
-                });
-                loadAdminSettings();
-            } catch (err) {
-                alert('Erro ao alterar status da loja: ' + err.message);
-            }
-        }
-
-        async function saveSettings() {
-            const fee = document.getElementById('setting-delivery-fee').value;
-            const time = document.getElementById('setting-delivery-time').value;
-            const pixKey = document.getElementById('setting-pix-key').value;
-            const pixName = document.getElementById('setting-pix-name').value;
-
-            const httpEnabled = document.getElementById('setting-http-enabled').checked ? '1' : '0';
-            const httpUrl = document.getElementById('setting-http-url').value.trim();
-            const httpMethod = document.getElementById('setting-http-method').value;
-            const httpHeaders = document.getElementById('setting-http-headers').value.trim();
-
-            const payload = {
-                delivery_fee: fee,
-                delivery_time: time,
-                pix_key: pixKey,
-                pix_name: pixName,
-                direct_http_enabled: httpEnabled,
-                direct_http_url: httpUrl,
-                direct_http_method: httpMethod,
-                direct_http_headers: httpHeaders
-            };
+        async function saveStoreSettings() {
+            const is_open = document.getElementById('setting-is-open').value;
+            const delivery_fee = document.getElementById('setting-delivery-fee').value;
+            const delivery_time = document.getElementById('setting-delivery-time').value;
+            const pix_key = document.getElementById('setting-pix-key').value;
 
             try {
                 const res = await fetch('/api/admin/settings', {
                     method: 'PUT',
                     headers: authHeaders(),
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ is_open, delivery_fee, delivery_time, pix_key })
                 });
-                if (res.ok) {
-                    alert('Configurações salvas com sucesso!');
-                    loadAdminSettings();
-                }
+                if (res.ok) alert('Configurações da loja salvas com sucesso!');
             } catch (err) {
-                alert('Erro ao salvar configurações: ' + err.message);
+                alert('Erro ao salvar configurações.');
+            }
+        }
+
+        async function saveHttpSettings() {
+            const direct_http_enabled = document.getElementById('setting-http-enabled').checked ? '1' : '0';
+            const direct_http_url = document.getElementById('setting-http-url').value.trim();
+            const direct_http_method = document.getElementById('setting-http-method').value;
+
+            try {
+                const res = await fetch('/api/admin/settings', {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ direct_http_enabled, direct_http_url, direct_http_method })
+                });
+                if (res.ok) alert('Configurações de disparo HTTP salvas!');
+            } catch (err) {
+                alert('Erro ao salvar configuração HTTP.');
             }
         }
 
         async function testHttpDispatch() {
-            const resSpan = document.getElementById('test-http-result');
-            resSpan.innerText = 'Enviando teste...';
+            const btn = document.getElementById('btn-test-http');
+            btn.disabled = true;
+            btn.innerText = 'Enviando...';
+
             try {
                 const res = await fetch('/api/admin/test-http', {
                     method: 'POST',
                     headers: authHeaders()
                 });
                 const data = await res.json();
-                if (data.success && data.result) {
-                    resSpan.innerText = `Status: ${data.result.status || 'Enviado'} (${data.result.sent ? 'OK' : 'Falha'})`;
-                    resSpan.className = data.result.sent ? 'text-xs font-mono text-emerald-400' : 'text-xs font-mono text-red-400';
-                } else {
-                    resSpan.innerText = 'Erro no envio';
-                    resSpan.className = 'text-xs font-mono text-red-400';
-                }
+                alert(`Resultado do Disparo HTTP:\n${JSON.stringify(data.result, null, 2)}`);
             } catch (err) {
-                resSpan.innerText = 'Erro: ' + err.message;
-                resSpan.className = 'text-xs font-mono text-red-400';
+                alert('Falha ao disparar requisição de teste: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Testar Envio';
             }
         }
 
         // Initialize on load
         window.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
+            if (adminState.token) {
+                showDashboard();
+            }
         });
     </script>
 </body>

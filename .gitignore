@@ -14,3 +14,6 @@ pitim-delivery/
 cookies.txt
 legacy_backup/
 deploy_delivery.py
+pitim-comanda/
+pitim-tv/
+comanda_*.html

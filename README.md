@@ -1,69 +1,63 @@
-# 🍢 Pitim Petiscaria & Espetos - Sistema TV Box & Painel Remoto
+# 🍢 Petiscaria Pitim - Comanda Presencial na Mesa & Delivery Integrados
 
-Sistema desenvolvido sob medida para a **Petiscaria do Pitim**, projetado para rodar em **TV BOX (Smart TV / Navegador em 1080p)** e ser controlado em tempo real via smartphone ou computador pelo link `/acesso`.
-
----
-
-## 📺 1. Funcionalidades da TV (`/`)
-
-- **Exibição Widescreen (1080p 16:9)**: Otimizada para navegadores de TV BOX (Android TV, Chrome, Silk).
-- **Destaques da Casa (Carrossel de Propagandas em Loop)**:
-  - Suporta **Vídeos** (MP4, WebM) e **Fotos** (PNG, JPEG, WebP).
-  - **Se for vídeo**: Reproduz até o final do vídeo automaticamente antes de passar para o próximo.
-  - **Se for foto**: Fica na tela pelo tempo em segundos configurado no painel.
-  - Barra de progresso visual em tempo real na base do card de propaganda.
-- **Player de Música & Clipes do YouTube**:
-  - Integração nativa com a API oficial do YouTube IFrame.
-  - Reproduz os links/músicas adicionados na fila de reprodução.
-  - Quando a fila esvazia, entra automaticamente em loop na playlist ambiente da petiscaria sem interrupções.
-  - Barra animada de equalizador de áudio e identificação da música tocando no momento.
-- **Logo Animada do Pitim**:
-  - Logo circular oficial com **fundo removido** e borda dourada.
-  - Efeito suave de levitação (`float`), respiração e aura neon de fogo com brasas flutuantes subindo na tela.
-- **Cardápio Digital & QR Code**:
-  - QR Code dinâmico em alta definição apontando para o cardápio digital / WhatsApp.
-  - Título customizável (Padrão: *"Faça seu pedido:"*).
-- **Letreiro Rodapé (Ticker)**:
-  - Mensagem contínua animada com avisos, senha do Wi-Fi e novidades da casa.
-  - Relógio digital com horário de Brasília atualizado a cada segundo.
+Sistema unificado e moderno de **Comanda Digital Presencial por Mesas**, **Cardápio Delivery com Autocomplete** e **Painel Master Integrado** com alertas sonoros e impressão de comanda para a **Pitim Petiscaria & Espetos**.
 
 ---
 
-## 📱 2. Controle Remoto & Painel Admin (`/acesso`)
+## 🌐 Links de Acesso Rápido
 
-- **Acesso Seguro**:
-  - **Usuário**: `admin`
-  - **Senha**: `admin123`
-- **Controle da Música em Tempo Real (WebSockets)**:
-  - Botão **⏭️ Pular Música**: Avança imediatamente para o próximo vídeo da fila na TV.
-  - Botão **⏸️ Pausar / ▶️ Retomar**.
-  - **Controle de Volume da TV (0 a 100%)**: Ajusta o volume da televisão diretamente pelo celular.
-  - **Adicionar à Fila**: Basta colar qualquer link do YouTube (vídeo, shorts ou playlist).
-  - Lista da fila com opção de remover itens.
-- **Gerenciador de Propagandas**:
-  - Upload de arquivos de vídeo e fotos direto para o servidor.
-  - Definição de tempo de exibição em segundos para imagens.
-  - Botão de pausar/ativar ou excluir propagandas.
-- **Configurações Gerais**:
-  - Alterar o link do QR Code (Cardápio Anota AI, iFood, WhatsApp, etc.).
-  - Alterar texto acima do QR Code.
-  - Alterar o texto do letreiro rodapé.
-  - Alterar a playlist padrão do YouTube.
-  - Alterar a senha de acesso.
+| Canal de Atendimento | Link Direto | Descrição |
+| :--- | :--- | :--- |
+| 🪑 **Comanda Presencial (Mesa)** | [comanda-pitim.187.77.41.37.sslip.io](http://comanda-pitim.187.77.41.37.sslip.io) ou [/comanda](http://pitim.187.77.41.37.sslip.io/comanda) | Para os clientes sentados nas mesas do estabelecimento |
+| 🛵 **Delivery & Balcão** | [pitim.187.77.41.37.sslip.io](http://pitim.187.77.41.37.sslip.io) ou [/delivery](http://pitim.187.77.41.37.sslip.io/delivery) | Para pedidos de entrega em domicílio e retirada |
+| 🔒 **Painel Master / Caixa** | [pitim.187.77.41.37.sslip.io/acesso](http://pitim.187.77.41.37.sslip.io/acesso) | **Login:** `admin` \| **Senha:** `admin123` |
+| 📦 **Repositório GitHub** | [wilsonalvesmartins/pitim-petiscaria](https://github.com/wilsonalvesmartins/pitim-petiscaria) | Integração contínua e deploy automático via Coolify |
+
+*(Domínios oficiais pré-configurados: `https://comanda.cajuru.cloud` e `https://pitim.cajuru.cloud`).*
 
 ---
 
-## 🚀 3. Deploy no Coolify (VPS)
+## 📋 Visão Geral da Arquitetura Unificada
 
-O projeto está configurado para o Coolify (`coolify.cajuru.cloud`) no projeto **Pitim Petiscaria**:
-- Servidor: `187.77.41.37` (localhost host)
-- Script de Deploy Automatizado: `python deploy_to_coolify.py`
-- Docker Compose: `docker-compose.yml`
+O sistema unifica os dois fluxos de vendas em um único backend Node.js de alta performance e banco de dados SQLite WAL persistente:
 
-Para rodar localmente com Docker:
-```bash
-docker compose up -d
-```
-Acesse:
-- **TV**: http://localhost:8000
-- **Controle Remoto**: http://localhost:8000/acesso
+1. **Cardápio e Preços Compartilhados:** A alteração de preço ou ativação/pausa de qualquer item (espetos, porções, bolinhos e bebidas) no Painel Master reflete em tempo real tanto no consumo presencial nas mesas quanto no delivery.
+2. **Mesmo Painel Master (`/acesso`):**
+   - Gerencia mesas ativas presenciais (comandas por cliente, totais e fechamento de conta).
+   - Gerencia pedidos de delivery (kanban de status, despachar entrega, WhatsApp e comanda térmica 80mm).
+   - Notificação sonora unificada (**Web Audio API Chime Synth**) para novos pedidos de delivery, pedidos de mesa e chamados de garçom.
+   - Banner de chamados urgentes no topo com alerta pulsante quando qualquer mesa pede o fechamento da conta.
+
+---
+
+## ✨ Funcionalidades Detalhadas
+
+### 1. 🪑 Comanda Presencial na Mesa (`/comanda` ou `comanda-pitim...`)
+- **Identificação da Mesa:** O cliente escolhe sua mesa (Mesa 01 a 15, Balcão ou personalizada) e digita seu nome.
+- **Comandas Separadas na Mesma Mesa:** Várias pessoas podem sentar na mesma mesa e ter comandas separadas com total privacidade sobre o que cada um consumiu.
+- **Janela Deslizante de 12 Horas:** Histórico de consumo filtra as últimas 12 horas, garantindo segurança na virada de turnos e clientes na madrugada.
+- **Acompanhamento de Status:** O cliente acompanha o status de cada item em tempo real (*Recebido*, *Em preparo*, *Entregue*).
+- **Opções de Fechamento da Conta:**
+  - **"Fechar Minha Comanda":** Solicita a presença do garçom para cobrar o valor individual daquele cliente.
+  - **"Fechar Comanda da Mesa Inteira":** Consolida todos os clientes da mesa e notifica o caixa com o valor total da mesa toda.
+- **Navegação Rápida:** Botão no topo para alternar para a modalidade Delivery com um clique.
+
+### 2. 🛵 Cardápio Delivery & Retirada (`/delivery` ou `pitim...`)
+- **Autocomplete por WhatsApp:** O cliente digita o telefone `(XX) XXXXX-XXXX` e o sistema preenche automaticamente Nome, Rua, Bairro, Número e Complemento salvos em pedidos anteriores.
+- **Modalidade Flexível:** Alternância entre Entrega em Domicílio (com taxa configurável) ou Retirada no Balcão (taxa R$ 0,00).
+- **Formas de Pagamento:** PIX, Dinheiro (com campo de troco) e Cartões.
+- **Disparo HTTP Direto (Chatwoot):** Envio nativo imediato de notificações webhook/HTTP sem intermediários.
+- **Meus Pedidos:** Consulta em tempo real do status do pedido (*Pendente*, *Em Preparo*, *Saiu para Entrega*, *Concluído*).
+- **Navegação Rápida:** Botão no topo para alternar para Comanda na Mesa com um clique.
+
+### 3. 🔒 Painel Master Integrado (`/acesso`)
+- **Autenticação Segura:** Usuário `admin` / Senha `admin123`.
+- **Alerta Sonoro em Tempo Real:** Sintetizador Web Audio API multi-tom (D5/A5) que toca automaticamente ao entrar novos pedidos de mesa, delivery ou chamados de garçom.
+- **Banner de Chamadas Urgentes:** Notificação em destaque pulsante no topo para solicitações de fechamento de mesa ou chamados de garçom com botões de atendimento direto.
+- **Abas do Painel:**
+  - 🪑 **Mesas & Comandas:** Grid de mesas ativas, comandas individuais por cliente, visualização de itens, botões para dar baixa em comanda individual ou fechar mesa completa com registro de forma de pagamento (PIX, Dinheiro, Débito, Crédito).
+  - 🛵 **Delivery & Balcão:** Kanban de pedidos de entrega com atalho direto para WhatsApp do cliente e impressão térmica (80mm).
+  - 📋 **Feed Geral:** Linha do tempo unificada de todos os pedidos realizados no dia.
+  - ➕ **Lançamento Manual:** Garçom ou operador do caixa pode lançar pedidos diretamente para qualquer mesa ou delivery.
+  - 🍢 **Cardápio & Preços:** Edição de preços em tempo real com atualização imediata no cardápio público, adição de novos itens e pausa/ativação.
+  - ⚙️ **Configurações:** Controle de abertura/fechamento da casa, taxa de entrega, chave PIX e configuração de disparo HTTP.
