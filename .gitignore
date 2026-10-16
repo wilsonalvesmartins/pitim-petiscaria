@@ -9,3 +9,4 @@ data/*.db-wal
 scratch/
 .system_generated/
 *.tmp
+pitim-delivery/
