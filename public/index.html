@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pitim Petiscaria & Espetos - Cardápio Delivery</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pitim: {
+                            dark: '#0c0c0e',
+                            card: '#16161a',
+                            cardHover: '#1f1f24',
+                            border: '#2a2a32',
+                            gold: '#fbbf24',
+                            amber: '#f59e0b',
+                            fire: '#ea580c',
+                            red: '#dc2626'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0c0c0e;
+            color: #f3f4f6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Outfit', sans-serif;
+        }
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-header {
+            background: rgba(12, 12, 14, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .gold-glow {
+            text-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+        }
+        .fire-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.35);
+        }
+        .fire-btn:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+            box-shadow: 0 6px 20px rgba(234, 88, 12, 0.5);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+        .animate-pulse-dot {
+            animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-24">
+
+    <!-- Top Sticky Header -->
+    <header class="sticky top-0 z-40 glass-header border-b border-pitim-border px-4 py-3">
+        <div class="max-w-4xl mx-auto flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="scrollToTop()">
+                <img src="/img/logo.png" alt="Pitim Petiscaria Logo" class="w-12 h-12 object-contain rounded-full shadow-lg border border-pitim-amber/30">
+                <div>
+                    <h1 class="text-lg font-black tracking-wide text-white flex items-center gap-1.5 leading-none">
+                        PITIM <span class="text-pitim-amber">PETISCARIA</span>
+                    </h1>
+                    <p class="text-xs text-gray-400 font-medium mt-0.5 flex items-center gap-2">
+                        <span>🔥 Espetos na Brasa & Petiscos</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="openMyOrdersModal()" class="px-3 py-1.5 rounded-full bg-pitim-card border border-pitim-border text-xs font-bold text-gray-300 hover:text-white hover:border-pitim-amber transition flex items-center gap-1.5">
+                    <span>📋</span>
+                    <span class="hidden sm:inline">Meus Pedidos</span>
+                </button>
+                <a href="/acesso" class="p-2 text-gray-400 hover:text-pitim-amber transition text-sm rounded-lg hover:bg-pitim-card" title="Acesso Master">
+                    🔒
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto w-full px-4 pt-4 flex-grow">
+
+        <!-- Store Status & Delivery Info Banner -->
+        <section class="bg-pitim-card border border-pitim-border rounded-2xl p-4 mb-5 card-shadow relative overflow-hidden">
+            <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-pitim-fire/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div id="status-indicator" class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/80 border border-emerald-500/30 text-emerald-400">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-dot"></span>
+                        <span id="status-text">Aberto Agora</span>
+                    </div>
+                    <div class="text-xs text-gray-400 flex items-center gap-1">
+                        <span>⏱️</span>
+                        <span id="delivery-time-badge">40 a 50 min</span>
+                    </div>
+                </div>
+                <div class="text-xs text-pitim-gold font-semibold flex items-center gap-1.5 bg-pitim-dark/60 px-3 py-1 rounded-full border border-pitim-border">
+                    <span>🛵 Taxa de Entrega:</span>
+                    <span id="delivery-fee-badge" class="font-bold text-white">R$ 8,00</span>
+                </div>
+            </div>
+
+            <!-- Closed Notice (Hidden by default) -->
+            <div id="closed-alert" class="hidden mt-3 p-3 bg-red-950/80 border border-red-500/40 rounded-xl text-red-200 text-xs font-medium flex items-center gap-2">
+                <span class="text-lg">⛔</span>
+                <span>Estamos fechados no momento. Você pode visualizar o cardápio, mas pedidos serão aceitos assim que abrirmos!</span>
+            </div>
+        </section>
+
+        <!-- Search Bar -->
+        <div class="relative mb-5">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 text-sm">
+                🔍
+            </span>
+            <input 
+                type="text" 
+                id="search-input" 
+                placeholder="Buscar porção, espeto, bebida..." 
+                oninput="filterMenu()"
+                class="w-full pl-10 pr-4 py-3 rounded-xl bg-pitim-card border border-pitim-border text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber focus:ring-1 focus:ring-pitim-amber transition"
+            >
+            <button id="clear-search" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-white text-sm">
+                ✕
+            </button>
+        </div>
+
+        <!-- Category Horizontal Tabs -->
+        <div class="flex items-center gap-2 overflow-x-auto scrollbar-none pb-2 mb-6 -mx-4 px-4 sticky top-[73px] z-30 glass-header py-2" id="categories-container">
+            <!-- Dynamically populated -->
+        </div>
+
+        <!-- Menu Items List -->
+        <div id="menu-sections" class="space-y-8">
+            <!-- Dynamically populated sections with cards -->
+            <div class="flex items-center justify-center py-16 text-gray-400 gap-2">
+                <div class="w-6 h-6 border-2 border-pitim-amber border-t-transparent rounded-full animate-spin"></div>
+                <span class="text-sm font-medium">Carregando cardápio irresistível...</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Floating Cart Bar (Bottom) -->
+    <div id="floating-cart" class="fixed bottom-0 inset-x-0 z-40 p-4 transition-transform duration-300 transform translate-y-full">
+        <div class="max-w-4xl mx-auto">
+            <button onclick="openCartDrawer()" class="w-full fire-btn text-white font-black py-3.5 px-5 rounded-2xl flex items-center justify-between shadow-2xl border border-pitim-gold/20 transform active:scale-[0.99] transition">
+                <div class="flex items-center gap-3">
+                    <div class="relative bg-black/30 w-10 h-10 rounded-xl flex items-center justify-center text-lg">
+                        🛒
+                        <span id="floating-cart-count" class="absolute -top-1.5 -right-1.5 bg-pitim-gold text-black text-xs font-black rounded-full w-5 h-5 flex items-center justify-center shadow">0</span>
+                    </div>
+                    <div class="text-left leading-tight">
+                        <div class="text-xs uppercase tracking-wider text-amber-100 font-semibold">Ver Pedido</div>
+                        <div class="text-sm font-bold text-white"><span id="floating-cart-items-text">0 itens</span></div>
+                    </div>
+                </div>
+                <div class="text-right flex items-center gap-2">
+                    <span id="floating-cart-total" class="text-xl font-black text-white">R$ 0,00</span>
+                    <span class="text-lg">➔</span>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal 1: Product Customization & Add to Cart -->
+    <div id="item-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity">
+        <div class="bg-pitim-card border border-pitim-border w-full max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-200">
+            <!-- Modal Header with Image -->
+            <div class="relative bg-pitim-dark h-48 w-full overflow-hidden flex items-center justify-center border-b border-pitim-border">
+                <img id="modal-item-img" src="/img/logo.png" alt="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-pitim-card via-pitim-card/40 to-transparent"></div>
+                <button onclick="closeItemModal()" class="absolute top-3 right-3 bg-black/60 text-white hover:text-pitim-amber w-9 h-9 rounded-full flex items-center justify-center text-xl font-bold backdrop-blur-md transition">
+                    &times;
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-5 overflow-y-auto flex-grow space-y-4">
+                <div>
+                    <span id="modal-item-category" class="text-xs font-bold uppercase tracking-wider text-pitim-amber">Porções</span>
+                    <h2 id="modal-item-name" class="text-xl font-black text-white mt-0.5">Nome do Item</h2>
+                    <p id="modal-item-desc" class="text-sm text-gray-400 mt-1 leading-relaxed">Descrição detalhada do prato com ingredientes e preparo.</p>
+                </div>
+
+                <div class="flex items-center justify-between p-3 bg-pitim-dark/60 rounded-xl border border-pitim-border">
+                    <span class="text-xs font-semibold text-gray-400 uppercase">Preço Unitário</span>
+                    <span id="modal-item-price" class="text-lg font-black text-pitim-gold">R$ 0,00</span>
+                </div>
+
+                <!-- Observations -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                        <span>📝 Alguma observação?</span>
+                        <span class="text-gray-500 font-normal lowercase">(opcional)</span>
+                    </label>
+                    <textarea 
+                        id="modal-item-notes" 
+                        rows="2" 
+                        placeholder="Ex: Ponto da carne bem passada, sem cebola, limão extra..."
+                        class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber transition resize-none"
+                    ></textarea>
+                </div>
+
+                <!-- Quantity Selector -->
+                <div class="flex items-center justify-between pt-2">
+                    <span class="text-sm font-bold text-white">Quantidade</span>
+                    <div class="flex items-center gap-3 bg-pitim-dark px-3 py-1.5 rounded-xl border border-pitim-border">
+                        <button onclick="adjustModalQty(-1)" class="w-8 h-8 rounded-lg bg-pitim-card border border-pitim-border text-white text-lg font-bold flex items-center justify-center hover:border-pitim-amber active:scale-95 transition">-</button>
+                        <span id="modal-item-qty" class="w-8 text-center text-base font-black text-white">1</span>
+                        <button onclick="adjustModalQty(1)" class="w-8 h-8 rounded-lg bg-pitim-card border border-pitim-border text-white text-lg font-bold flex items-center justify-center hover:border-pitim-amber active:scale-95 transition">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 bg-pitim-dark/80 border-t border-pitim-border">
+                <button onclick="confirmAddToCart()" class="w-full fire-btn text-white font-black py-3.5 px-5 rounded-xl flex items-center justify-between shadow-lg">
+                    <span>Adicionar ao Pedido</span>
+                    <span id="modal-total-price" class="text-lg">R$ 0,00</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Cart & Checkout Slide-Over -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-end transition-opacity">
+        <div class="bg-pitim-card border-l border-pitim-border w-full max-w-md h-full flex flex-col shadow-2xl">
+            <!-- Header -->
+            <div class="p-4 border-b border-pitim-border flex items-center justify-between bg-pitim-dark/60">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🛒</span>
+                    <h2 class="text-lg font-black text-white">Seu Carrinho</h2>
+                </div>
+                <button onclick="closeCartDrawer()" class="text-gray-400 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center rounded-lg hover:bg-pitim-border/50">
+                    &times;
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="p-4 overflow-y-auto flex-grow space-y-5">
+
+                <!-- Items List -->
+                <div id="cart-items-container" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Empty state -->
+                <div id="cart-empty-state" class="hidden text-center py-12 text-gray-500">
+                    <span class="text-5xl block mb-2">🍢</span>
+                    <p class="text-base font-bold text-gray-400">Seu carrinho está vazio</p>
+                    <p class="text-xs text-gray-500 mt-1">Que tal adicionar um espetinho suculento ou uma porção crocante?</p>
+                </div>
+
+                <!-- Delivery Type Toggle -->
+                <div id="checkout-form-section" class="space-y-4 pt-2 border-t border-pitim-border">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Forma de Recebimento</label>
+                        <div class="grid grid-cols-2 gap-2 bg-pitim-dark p-1 rounded-xl border border-pitim-border">
+                            <button type="button" id="type-delivery-btn" onclick="setDeliveryType('delivery')" class="py-2.5 px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 bg-pitim-amber text-black shadow">
+                                <span>🛵</span>
+                                <span>Entrega</span>
+                            </button>
+                            <button type="button" id="type-takeout-btn" onclick="setDeliveryType('takeout')" class="py-2.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-gray-400 hover:text-white">
+                                <span>🏪</span>
+                                <span>Retirada Balcão</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Customer Phone with Auto-Complete -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1">
+                                <span>📱 Telefone / WhatsApp</span>
+                                <span class="text-pitim-amber">*</span>
+                            </label>
+                            <span id="phone-lookup-status" class="text-[11px] font-semibold text-pitim-gold hidden flex items-center gap-1">
+                                <span class="animate-spin text-xs">⏳</span> Buscando cadastro...
+                            </span>
+                        </div>
+                        <input 
+                            type="tel" 
+                            id="customer-phone" 
+                            placeholder="(16) 99999-9999" 
+                            maxlength="15"
+                            oninput="formatPhoneInput(this); checkCustomerPhone(this.value);"
+                            class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber transition font-mono"
+                            required
+                        >
+                        <!-- Existing Customer Badge -->
+                        <div id="welcome-back-badge" class="hidden mt-2 p-2.5 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2">
+                            <span>✨</span>
+                            <div>
+                                <span class="font-bold">Cliente reconhecido:</span>
+                                <span id="welcome-back-name">Wilson Martins</span>. Dados preenchidos automaticamente!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Name -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">
+                            <span>👤 Nome Completo</span>
+                            <span class="text-pitim-amber">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="customer-name" 
+                            placeholder="Seu nome" 
+                            class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber transition"
+                            required
+                        >
+                    </div>
+
+                    <!-- Address Fields (Shown for Delivery) -->
+                    <div id="address-fields" class="space-y-3">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-2">
+                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Rua / Logradouro</label>
+                                <input 
+                                    type="text" 
+                                    id="customer-address" 
+                                    placeholder="Rua, Avenida..." 
+                                    class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber transition"
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Nº</label>
+                                <input 
+                                    type="text" 
+                                    id="customer-number" 
+                                    placeholder="123" 
+                                    class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber transition"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Bairro</label>
+                                <input 
+                                    type="text" 
+                                    id="customer-neighborhood" 
+                                    placeholder="Bairro" 
+                                    class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber transition"
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Complemento</label>
+                                <input 
+                                    type="text" 
+                                    id="customer-complement" 
+                                    placeholder="Apto, Bloco..." 
+                                    class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber transition"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Forma de Pagamento</label>
+                        <select 
+                            id="payment-method" 
+                            onchange="handlePaymentChange()"
+                            class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber transition"
+                        >
+                            <option value="PIX">💠 PIX (Chave no app / QR Code)</option>
+                            <option value="Cartão de Crédito">💳 Cartão de Crédito (na entrega/balcão)</option>
+                            <option value="Cartão de Débito">💳 Cartão de Débito (na entrega/balcão)</option>
+                            <option value="Dinheiro">💵 Dinheiro</option>
+                        </select>
+                    </div>
+
+                    <!-- Change field if cash -->
+                    <div id="change-field" class="hidden">
+                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Precisa de troco para quanto?</label>
+                        <input 
+                            type="number" 
+                            step="0.01" 
+                            id="payment-change" 
+                            placeholder="Ex: 50.00 ou 100.00" 
+                            class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber transition"
+                        >
+                    </div>
+
+                    <!-- General Order Notes -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Observações Gerais do Pedido</label>
+                        <input 
+                            type="text" 
+                            id="order-notes" 
+                            placeholder="Ex: Tocar campainha, entregar na portaria..." 
+                            class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber transition"
+                        >
+                    </div>
+
+                    <!-- Totals Breakdown -->
+                    <div class="p-3 bg-pitim-dark/80 rounded-xl border border-pitim-border space-y-1.5 text-xs">
+                        <div class="flex justify-between text-gray-400">
+                            <span>Subtotal</span>
+                            <span id="drawer-subtotal">R$ 0,00</span>
+                        </div>
+                        <div class="flex justify-between text-gray-400" id="drawer-delivery-row">
+                            <span>Taxa de Entrega</span>
+                            <span id="drawer-delivery-fee">R$ 8,00</span>
+                        </div>
+                        <div class="flex justify-between text-sm font-black text-white pt-1.5 border-t border-pitim-border">
+                            <span>Total a Pagar</span>
+                            <span id="drawer-total" class="text-pitim-gold text-base">R$ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Submit -->
+            <div class="p-4 bg-pitim-dark/95 border-t border-pitim-border" id="cart-drawer-footer">
+                <button 
+                    type="button" 
+                    id="submit-order-btn" 
+                    onclick="submitOrder()" 
+                    class="w-full fire-btn text-white font-black py-4 px-5 rounded-xl flex items-center justify-center gap-2 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                    <span id="submit-btn-text">Confirmar e Fazer Pedido</span>
+                    <span id="submit-btn-spinner" class="hidden text-base">⏳</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Order Success & Tracking -->
+    <div id="success-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-pitim-card border border-pitim-border w-full max-w-md rounded-2xl p-6 text-center shadow-2xl relative">
+            <div class="w-16 h-16 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                ✅
+            </div>
+            <h3 class="text-2xl font-black text-white">Pedido Realizado!</h3>
+            <p class="text-xs text-pitim-gold font-bold mt-1 uppercase tracking-wider">Número do Pedido: #<span id="success-order-id">0000</span></p>
+            
+            <p class="text-xs text-gray-300 mt-3 leading-relaxed">
+                Seu pedido foi recebido com sucesso pela cozinha da <strong>Pitim Petiscaria</strong> e já está em processamento!
+            </p>
+
+            <!-- PIX Box if chosen -->
+            <div id="success-pix-box" class="hidden mt-4 p-3 bg-pitim-dark rounded-xl border border-pitim-amber/40 text-left">
+                <div class="flex items-center justify-between text-xs text-pitim-gold font-bold mb-1">
+                    <span>💠 Pagamento via PIX</span>
+                    <span id="pix-total-val">R$ 0,00</span>
+                </div>
+                <p class="text-[11px] text-gray-400 mb-2">Copie a chave abaixo para realizar o pagamento no seu banco:</p>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="pix-key-val" readonly class="flex-grow p-2 rounded-lg bg-black text-xs text-white font-mono border border-pitim-border select-all">
+                    <button onclick="copyPixKey()" class="px-3 py-2 bg-pitim-amber text-black font-bold text-xs rounded-lg hover:bg-pitim-gold transition">
+                        Copiar
+                    </button>
+                </div>
+                <div class="text-[10px] text-gray-500 mt-1">Titular: <span id="pix-name-val">Pitim Petiscaria</span></div>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-6 flex flex-col gap-2.5">
+                <button onclick="sendOrderToWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition">
+                    <span>💬</span>
+                    <span>Acompanhar no WhatsApp</span>
+                </button>
+                <button onclick="closeSuccessModal(); openMyOrdersModal();" class="w-full bg-pitim-card hover:bg-pitim-dark border border-pitim-border text-gray-300 font-bold py-3 px-4 rounded-xl text-xs transition">
+                    Ver Meus Pedidos
+                </button>
+                <button onclick="closeSuccessModal()" class="w-full text-xs text-gray-500 hover:text-gray-300 py-1 transition">
+                    Voltar ao Cardápio
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Meus Pedidos (Tracking) -->
+    <div id="my-orders-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-pitim-card border border-pitim-border w-full max-w-lg rounded-2xl max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="p-4 border-b border-pitim-border flex items-center justify-between bg-pitim-dark/60">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">📋</span>
+                    <h3 class="text-lg font-black text-white">Meus Pedidos</h3>
+                </div>
+                <button onclick="closeMyOrdersModal()" class="text-gray-400 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center rounded-lg hover:bg-pitim-border/50">
+                    &times;
+                </button>
+            </div>
+
+            <div class="p-4 overflow-y-auto flex-grow space-y-4">
+                <div class="flex items-center gap-2">
+                    <input 
+                        type="tel" 
+                        id="my-orders-phone" 
+                        placeholder="Informe seu WhatsApp para consultar..." 
+                        class="flex-grow p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber font-mono"
+                    >
+                    <button onclick="loadMyOrders()" class="fire-btn px-4 py-2.5 rounded-xl text-xs font-bold text-white shadow">
+                        Buscar
+                    </button>
+                </div>
+
+                <div id="my-orders-list" class="space-y-3">
+                    <div class="text-center py-8 text-gray-500 text-xs">
+                        Digite seu telefone acima para ver o histórico e status em tempo real.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        const state = {
+            items: [],
+            categories: [],
+            selectedCategory: 'Todos',
+            settings: {
+                is_open: '1',
+                delivery_fee: 8.0,
+                delivery_time: '40 a 50 min',
+                pix_key: '',
+                pix_name: 'Pitim Petiscaria'
+            },
+            cart: JSON.parse(localStorage.getItem('pitim_cart') || '[]'),
+            deliveryType: 'delivery', // 'delivery' or 'takeout'
+            customerData: JSON.parse(localStorage.getItem('pitim_customer') || '{}'),
+            activeModalItem: null,
+            modalQty: 1,
+            lastSubmittedOrder: null
+        };
+
+        // Format Currency BRL
+        const formatBRL = (val) => Number(val).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        // Initialize App
+        async function init() {
+            await loadMenu();
+            renderCategories();
+            renderMenuItems();
+            updateCartUI();
+
+            // Populate cached customer data if any
+            if (state.customerData.whatsapp) {
+                const phoneInput = document.getElementById('customer-phone');
+                if (phoneInput) {
+                    phoneInput.value = formatPhone(state.customerData.whatsapp);
+                    checkCustomerPhone(phoneInput.value);
+                }
+            }
+        }
+
+        // Fetch Menu & Settings
+        async function loadMenu() {
+            try {
+                const res = await fetch('/api/menu');
+                const data = await res.json();
+                state.items = data.items || [];
+                if (data.settings) {
+                    state.settings = { ...state.settings, ...data.settings };
+                    state.settings.delivery_fee = parseFloat(data.settings.delivery_fee || 8.0);
+                }
+
+                // Extract unique categories in order
+                const catSet = new Set();
+                state.items.forEach(it => { if (it.category) catSet.add(it.category); });
+                state.categories = ['Todos', ...Array.from(catSet)];
+
+                updateSettingsUI();
+            } catch (err) {
+                console.error("Erro ao carregar cardápio:", err);
+            }
+        }
+
+        function updateSettingsUI() {
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            const closedAlert = document.getElementById('closed-alert');
+            const deliveryTime = document.getElementById('delivery-time-badge');
+            const deliveryFee = document.getElementById('delivery-fee-badge');
+
+            if (state.settings.is_open === '1') {
+                statusIndicator.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/80 border border-emerald-500/30 text-emerald-400";
+                statusText.innerText = "Aberto Agora";
+                closedAlert.classList.add('hidden');
+            } else {
+                statusIndicator.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-950/80 border border-red-500/30 text-red-400";
+                statusText.innerText = "Fechado no Momento";
+                closedAlert.classList.remove('hidden');
+            }
+
+            if (deliveryTime) deliveryTime.innerText = state.settings.delivery_time || '40 a 50 min';
+            if (deliveryFee) deliveryFee.innerText = formatBRL(state.settings.delivery_fee);
+        }
+
+        // Render Category Tabs
+        function renderCategories() {
+            const container = document.getElementById('categories-container');
+            if (!container) return;
+
+            const categoryIcons = {
+                'Todos': '🔥',
+                'Espetos na Brasa': '🍢',
+                'Porções & Petiscos': '🍟',
+                'Bolinhos Especiais': '🥟',
+                'Cervejas': '🍺',
+                'Refrigerantes & Bebidas': '🥤'
+            };
+
+            container.innerHTML = state.categories.map(cat => {
+                const isActive = state.selectedCategory === cat;
+                const icon = categoryIcons[cat] || '✨';
+                const activeClasses = isActive 
+                    ? 'bg-pitim-amber text-black font-black shadow-lg shadow-pitim-amber/20 border-pitim-amber' 
+                    : 'bg-pitim-card text-gray-300 font-bold border-pitim-border hover:border-pitim-amber/50 hover:text-white';
+                return `
+                    <button 
+                        onclick="selectCategory('${cat}')" 
+                        class="px-4 py-2 rounded-xl text-xs whitespace-nowrap border transition flex items-center gap-1.5 active:scale-95 ${activeClasses}"
+                    >
+                        <span>${icon}</span>
+                        <span>${cat}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectCategory(cat) {
+            state.selectedCategory = cat;
+            renderCategories();
+            renderMenuItems();
+        }
+
+        // Render Menu Cards
+        function renderMenuItems() {
+            const container = document.getElementById('menu-sections');
+            if (!container) return;
+
+            const searchVal = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+
+            let filtered = state.items.filter(item => {
+                const matchesCat = state.selectedCategory === 'Todos' || item.category === state.selectedCategory;
+                const matchesSearch = !searchVal || 
+                    item.name.toLowerCase().includes(searchVal) || 
+                    (item.description && item.description.toLowerCase().includes(searchVal)) ||
+                    item.category.toLowerCase().includes(searchVal);
+                return matchesCat && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16 text-gray-500">
+                        <span class="text-4xl block mb-2">🔍</span>
+                        <p class="text-sm font-bold text-gray-400">Nenhum item encontrado</p>
+                        <p class="text-xs text-gray-600 mt-1">Tente buscar por outro termo ou escolha outra categoria.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Group by category if "Todos", else single group
+            const groups = {};
+            filtered.forEach(it => {
+                if (!groups[it.category]) groups[it.category] = [];
+                groups[it.category].push(it);
+            });
+
+            container.innerHTML = Object.entries(groups).map(([catName, items]) => `
+                <section class="space-y-3">
+                    <div class="flex items-center gap-2 border-b border-pitim-border/60 pb-2">
+                        <h2 class="text-base font-black text-white uppercase tracking-wider">${catName}</h2>
+                        <span class="text-xs text-gray-500 font-semibold">(${items.length})</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                        ${items.map(item => renderItemCard(item)).join('')}
+                    </div>
+                </section>
+            `).join('');
+        }
+
+        function renderItemCard(item) {
+            const cartItem = state.cart.find(c => c.id === item.id);
+            const inCartQty = cartItem ? cartItem.quantity : 0;
+            const imgPath = item.image_url && item.image_url.trim() ? item.image_url : '/img/logo.png';
+
+            return `
+                <div class="bg-pitim-card border border-pitim-border rounded-2xl p-3.5 flex gap-3.5 items-center card-shadow hover:border-pitim-border/80 transition relative overflow-hidden group">
+                    <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-xl bg-pitim-dark border border-pitim-border overflow-hidden flex-shrink-0 relative">
+                        <img src="${imgPath}" alt="${item.name}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        ${inCartQty > 0 ? `
+                            <span class="absolute top-1 right-1 bg-pitim-amber text-black text-[11px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow">
+                                ${inCartQty}
+                            </span>
+                        ` : ''}
+                    </div>
+                    <div class="flex-grow flex flex-col justify-between h-full min-h-[96px]">
+                        <div>
+                            <h3 class="text-sm font-bold text-white group-hover:text-pitim-gold transition leading-snug">${item.name}</h3>
+                            <p class="text-xs text-gray-400 line-clamp-2 mt-1 leading-relaxed">${item.description || ''}</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-pitim-border/40">
+                            <span class="text-base font-black text-pitim-gold">${formatBRL(item.price)}</span>
+                            <button 
+                                onclick="openItemModal(${item.id})" 
+                                class="px-3.5 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1 active:scale-95 ${
+                                    inCartQty > 0 
+                                        ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30' 
+                                        : 'bg-pitim-card border border-pitim-border text-white hover:border-pitim-amber hover:text-pitim-gold'
+                                }"
+                            >
+                                <span>${inCartQty > 0 ? '✓' : '+'}</span>
+                                <span>${inCartQty > 0 ? `${inCartQty} no Pedido` : 'Adicionar'}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Search & Filter
+        function filterMenu() {
+            const input = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search');
+            if (input && clearBtn) {
+                if (input.value) clearBtn.classList.remove('hidden');
+                else clearBtn.classList.add('hidden');
+            }
+            renderMenuItems();
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('search-input');
+            if (input) {
+                input.value = '';
+                filterMenu();
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Modal 1: Open Item Modal
+        function openItemModal(itemId) {
+            const item = state.items.find(i => i.id === itemId);
+            if (!item) return;
+
+            state.activeModalItem = item;
+            state.modalQty = 1;
+
+            document.getElementById('modal-item-category').innerText = item.category;
+            document.getElementById('modal-item-name').innerText = item.name;
+            document.getElementById('modal-item-desc').innerText = item.description || 'Delicioso item preparado na hora.';
+            document.getElementById('modal-item-price').innerText = formatBRL(item.price);
+            document.getElementById('modal-item-img').src = item.image_url || '/img/logo.png';
+            document.getElementById('modal-item-notes').value = '';
+            document.getElementById('modal-item-qty').innerText = state.modalQty;
+            document.getElementById('modal-total-price').innerText = formatBRL(item.price * state.modalQty);
+
+            const modal = document.getElementById('item-modal');
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeItemModal() {
+            const modal = document.getElementById('item-modal');
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            state.activeModalItem = null;
+        }
+
+        function adjustModalQty(delta) {
+            state.modalQty = Math.max(1, state.modalQty + delta);
+            document.getElementById('modal-item-qty').innerText = state.modalQty;
+            if (state.activeModalItem) {
+                document.getElementById('modal-total-price').innerText = formatBRL(state.activeModalItem.price * state.modalQty);
+            }
+        }
+
+        function confirmAddToCart() {
+            if (!state.activeModalItem) return;
+
+            const notes = document.getElementById('modal-item-notes').value.trim();
+            const existingIdx = state.cart.findIndex(c => c.id === state.activeModalItem.id && c.notes === notes);
+
+            if (existingIdx !== -1) {
+                state.cart[existingIdx].quantity += state.modalQty;
+            } else {
+                state.cart.push({
+                    id: state.activeModalItem.id,
+                    name: state.activeModalItem.name,
+                    price: state.activeModalItem.price,
+                    category: state.activeModalItem.category,
+                    image_url: state.activeModalItem.image_url,
+                    quantity: state.modalQty,
+                    notes: notes
+                });
+            }
+
+            saveCart();
+            updateCartUI();
+            renderMenuItems();
+            closeItemModal();
+        }
+
+        // Cart Management
+        function saveCart() {
+            localStorage.setItem('pitim_cart', JSON.stringify(state.cart));
+        }
+
+        function updateCartUI() {
+            const totalCount = state.cart.reduce((sum, i) => sum + i.quantity, 0);
+            const subtotal = state.cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+            const fee = state.deliveryType === 'delivery' ? state.settings.delivery_fee : 0;
+            const total = subtotal + fee;
+
+            // Floating bar
+            const floatingCart = document.getElementById('floating-cart');
+            const floatingCount = document.getElementById('floating-cart-count');
+            const floatingItemsText = document.getElementById('floating-cart-items-text');
+            const floatingTotal = document.getElementById('floating-cart-total');
+
+            if (totalCount > 0) {
+                floatingCart.classList.remove('translate-y-full');
+                floatingCount.innerText = totalCount;
+                floatingItemsText.innerText = `${totalCount} ${totalCount === 1 ? 'item' : 'itens'}`;
+                floatingTotal.innerText = formatBRL(total);
+            } else {
+                floatingCart.classList.add('translate-y-full');
+            }
+
+            // Drawer
+            document.getElementById('drawer-subtotal').innerText = formatBRL(subtotal);
+            document.getElementById('drawer-delivery-fee').innerText = formatBRL(fee);
+            document.getElementById('drawer-total').innerText = formatBRL(total);
+
+            const deliveryRow = document.getElementById('drawer-delivery-row');
+            if (state.deliveryType === 'takeout') {
+                deliveryRow.classList.add('opacity-50');
+                document.getElementById('drawer-delivery-fee').innerText = 'Grátis (Retirada)';
+            } else {
+                deliveryRow.classList.remove('opacity-50');
+            }
+
+            renderCartDrawerItems();
+        }
+
+        function renderCartDrawerItems() {
+            const container = document.getElementById('cart-items-container');
+            const emptyState = document.getElementById('cart-empty-state');
+            const formSection = document.getElementById('checkout-form-section');
+            const footer = document.getElementById('cart-drawer-footer');
+
+            if (!container) return;
+
+            if (state.cart.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                formSection.classList.add('hidden');
+                footer.classList.add('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            formSection.classList.remove('hidden');
+            footer.classList.remove('hidden');
+
+            container.innerHTML = state.cart.map((item, idx) => `
+                <div class="bg-pitim-dark p-3 rounded-xl border border-pitim-border flex items-center justify-between gap-3">
+                    <div class="flex-grow">
+                        <div class="text-xs font-bold text-white">${item.name}</div>
+                        ${item.notes ? `<div class="text-[11px] text-gray-400 italic mt-0.5">Obs: ${item.notes}</div>` : ''}
+                        <div class="text-xs font-black text-pitim-gold mt-1">${formatBRL(item.price * item.quantity)}</div>
+                    </div>
+                    <div class="flex items-center gap-2 bg-pitim-card px-2 py-1 rounded-lg border border-pitim-border flex-shrink-0">
+                        <button onclick="changeCartQty(${idx}, -1)" class="w-6 h-6 rounded bg-pitim-dark text-white font-bold flex items-center justify-center hover:text-pitim-amber">-</button>
+                        <span class="w-5 text-center text-xs font-bold text-white">${item.quantity}</span>
+                        <button onclick="changeCartQty(${idx}, 1)" class="w-6 h-6 rounded bg-pitim-dark text-white font-bold flex items-center justify-center hover:text-pitim-amber">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function changeCartQty(idx, delta) {
+            if (!state.cart[idx]) return;
+            state.cart[idx].quantity += delta;
+            if (state.cart[idx].quantity <= 0) {
+                state.cart.splice(idx, 1);
+            }
+            saveCart();
+            updateCartUI();
+            renderMenuItems();
+        }
+
+        // Cart Drawer Open/Close
+        function openCartDrawer() {
+            document.getElementById('cart-drawer').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            updateCartUI();
+        }
+
+        function closeCartDrawer() {
+            document.getElementById('cart-drawer').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        // Delivery Type Toggle
+        function setDeliveryType(type) {
+            state.deliveryType = type;
+            const delBtn = document.getElementById('type-delivery-btn');
+            const takeBtn = document.getElementById('type-takeout-btn');
+            const addrSection = document.getElementById('address-fields');
+
+            if (type === 'delivery') {
+                delBtn.className = "py-2.5 px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 bg-pitim-amber text-black shadow";
+                takeBtn.className = "py-2.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-gray-400 hover:text-white";
+                addrSection.classList.remove('hidden');
+            } else {
+                delBtn.className = "py-2.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-gray-400 hover:text-white";
+                takeBtn.className = "py-2.5 px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 bg-pitim-amber text-black shadow";
+                addrSection.classList.add('hidden');
+            }
+
+            updateCartUI();
+        }
+
+        // Phone Input Mask & Autocomplete
+        function formatPhone(v) {
+            v = v.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 10) return v.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+            if (v.length > 6) return v.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3');
+            if (v.length > 2) return v.replace(/^(\d{2})(\d{0,5})$/, '($1) $2');
+            return v;
+        }
+
+        function formatPhoneInput(input) {
+            input.value = formatPhone(input.value);
+        }
+
+        let phoneLookupTimeout = null;
+        async function checkCustomerPhone(val) {
+            clearTimeout(phoneLookupTimeout);
+            const digits = val.replace(/\D/g, '');
+            const badge = document.getElementById('welcome-back-badge');
+            const nameBadge = document.getElementById('welcome-back-name');
+            const status = document.getElementById('phone-lookup-status');
+
+            if (digits.length < 10) {
+                badge.classList.add('hidden');
+                return;
+            }
+
+            status.classList.remove('hidden');
+
+            phoneLookupTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`/api/users/${digits}`);
+                    const user = await res.json();
+                    status.classList.add('hidden');
+
+                    if (user && user.name) {
+                        nameBadge.innerText = user.name;
+                        badge.classList.remove('hidden');
+
+                        // Auto-fill fields if user hasn't typed
+                        const nameInp = document.getElementById('customer-name');
+                        const addrInp = document.getElementById('customer-address');
+                        const neighInp = document.getElementById('customer-neighborhood');
+                        const numInp = document.getElementById('customer-number');
+                        const compInp = document.getElementById('customer-complement');
+
+                        if (nameInp && !nameInp.value) nameInp.value = user.name || '';
+                        if (addrInp && !addrInp.value) addrInp.value = user.address || '';
+                        if (neighInp && !neighInp.value) neighInp.value = user.neighborhood || '';
+                        if (numInp && !numInp.value) numInp.value = user.number || '';
+                        if (compInp && !compInp.value) compInp.value = user.complement || '';
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                } catch(e) {
+                    status.classList.add('hidden');
+                }
+            }, 400);
+        }
+
+        // Payment Change Field Toggle
+        function handlePaymentChange() {
+            const select = document.getElementById('payment-method');
+            const changeField = document.getElementById('change-field');
+            if (select.value === 'Dinheiro') {
+                changeField.classList.remove('hidden');
+            } else {
+                changeField.classList.add('hidden');
+            }
+        }
+
+        // Submit Order
+        async function submitOrder() {
+            if (state.cart.length === 0) return alert('Seu carrinho está vazio!');
+
+            if (state.settings.is_open === '0') {
+                return alert('A Petiscaria Pitim está fechada no momento.');
+            }
+
+            const phone = document.getElementById('customer-phone').value.trim();
+            const name = document.getElementById('customer-name').value.trim();
+            const address = document.getElementById('customer-address').value.trim();
+            const neighborhood = document.getElementById('customer-neighborhood').value.trim();
+            const number = document.getElementById('customer-number').value.trim();
+            const complement = document.getElementById('customer-complement').value.trim();
+            const paymentMethod = document.getElementById('payment-method').value;
+            const changeFor = parseFloat(document.getElementById('payment-change')?.value) || null;
+            const notes = document.getElementById('order-notes').value.trim();
+
+            if (!phone || phone.replace(/\D/g, '').length < 10) {
+                return alert('Por favor, informe um número de WhatsApp válido.');
+            }
+            if (!name) {
+                return alert('Por favor, informe seu nome.');
+            }
+            if (state.deliveryType === 'delivery' && !address) {
+                return alert('Por favor, informe o endereço para entrega.');
+            }
+
+            const subtotal = state.cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+            const deliveryFee = state.deliveryType === 'delivery' ? state.settings.delivery_fee : 0;
+            const total = subtotal + deliveryFee;
+
+            const payload = {
+                whatsapp: phone,
+                name,
+                address,
+                neighborhood,
+                number,
+                complement,
+                type: state.deliveryType,
+                paymentMethod,
+                changeFor,
+                notes,
+                items: state.cart,
+                subtotal,
+                delivery_fee: deliveryFee,
+                total
+            };
+
+            const submitBtn = document.getElementById('submit-order-btn');
+            const submitText = document.getElementById('submit-btn-text');
+            const submitSpinner = document.getElementById('submit-btn-spinner');
+
+            submitBtn.disabled = true;
+            submitText.innerText = 'Enviando Pedido...';
+            submitSpinner.classList.remove('hidden');
+
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    throw new Error(data.error || 'Falha ao processar pedido.');
+                }
+
+                // Cache customer data
+                localStorage.setItem('pitim_customer', JSON.stringify({ whatsapp: phone, name, address, neighborhood, number, complement }));
+
+                // Clear cart
+                state.lastSubmittedOrder = {
+                    id: data.orderId,
+                    ...payload
+                };
+                state.cart = [];
+                saveCart();
+                updateCartUI();
+                renderMenuItems();
+
+                closeCartDrawer();
+                openSuccessModal(state.lastSubmittedOrder);
+
+            } catch (err) {
+                alert('Erro ao enviar pedido: ' + err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitText.innerText = 'Confirmar e Fazer Pedido';
+                submitSpinner.classList.add('hidden');
+            }
+        }
+
+        // Modal 3: Success Modal
+        function openSuccessModal(order) {
+            document.getElementById('success-order-id').innerText = order.id;
+            
+            const pixBox = document.getElementById('success-pix-box');
+            if (order.paymentMethod === 'PIX') {
+                pixBox.classList.remove('hidden');
+                document.getElementById('pix-total-val').innerText = formatBRL(order.total);
+                document.getElementById('pix-key-val').value = state.settings.pix_key || '16999999999';
+                document.getElementById('pix-name-val').innerText = state.settings.pix_name || 'Pitim Petiscaria';
+            } else {
+                pixBox.classList.add('hidden');
+            }
+
+            document.getElementById('success-modal').classList.remove('hidden');
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.add('hidden');
+        }
+
+        function copyPixKey() {
+            const input = document.getElementById('pix-key-val');
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            alert('Chave PIX copiada para a área de transferência!');
+        }
+
+        function sendOrderToWhatsApp() {
+            if (!state.lastSubmittedOrder) return;
+            const o = state.lastSubmittedOrder;
+            const items = o.items.map(it => `• ${it.quantity}x ${it.name}`).join('%0A');
+            const total = formatBRL(o.total);
+            const msg = `Olá! Acabei de fazer o Pedido %23${o.id} no Pitim Petiscaria.%0A%0A*Itens:*%0A${items}%0A%0A*Total:* ${total}%0A*Cliente:* ${encodeURIComponent(o.name)}`;
+            const storePhone = (state.settings.store_phone || '5516999999999').replace(/\D/g, '');
+            window.open(`https://wa.me/${storePhone}?text=${msg}`, '_blank');
+        }
+
+        // Modal 4: Meus Pedidos
+        function openMyOrdersModal() {
+            document.getElementById('my-orders-modal').classList.remove('hidden');
+            const cachedPhone = state.customerData.whatsapp || document.getElementById('customer-phone')?.value;
+            if (cachedPhone) {
+                document.getElementById('my-orders-phone').value = formatPhone(cachedPhone);
+                loadMyOrders();
+            }
+        }
+
+        function closeMyOrdersModal() {
+            document.getElementById('my-orders-modal').classList.add('hidden');
+        }
+
+        async function loadMyOrders() {
+            const phone = document.getElementById('my-orders-phone').value.replace(/\D/g, '');
+            const container = document.getElementById('my-orders-list');
+            if (!phone) return alert('Digite seu telefone para buscar pedidos.');
+
+            container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs animate-spin">⏳ Buscando...</div>`;
+
+            try {
+                const res = await fetch(`/api/client/orders/${phone}`);
+                const orders = await res.json();
+
+                if (!orders || orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-gray-500 text-xs">
+                            Nenhum pedido encontrado para este número.
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = orders.map(ord => {
+                    let items = [];
+                    try { items = JSON.parse(ord.items_json); } catch(e) {}
+                    const statusColors = {
+                        'Pendente': 'bg-amber-950/80 border-amber-500/40 text-amber-400',
+                        'Preparando': 'bg-blue-950/80 border-blue-500/40 text-blue-400',
+                        'Saiu para Entrega': 'bg-purple-950/80 border-purple-500/40 text-purple-400',
+                        'Pronto para Retirada': 'bg-purple-950/80 border-purple-500/40 text-purple-400',
+                        'Concluído': 'bg-emerald-950/80 border-emerald-500/40 text-emerald-400',
+                        'Cancelado': 'bg-red-950/80 border-red-500/40 text-red-400'
+                    };
+                    const color = statusColors[ord.status] || 'bg-pitim-dark border-pitim-border text-gray-300';
+                    const dateStr = new Date(ord.created_at).toLocaleString('pt-BR');
+
+                    return `
+                        <div class="bg-pitim-dark p-3.5 rounded-xl border border-pitim-border space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-black text-white">Pedido #${ord.id}</span>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black border ${color}">
+                                    ${ord.status}
+                                </span>
+                            </div>
+                            <div class="text-[11px] text-gray-400">
+                                ${items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
+                            </div>
+                            <div class="flex items-center justify-between text-xs pt-2 border-t border-pitim-border/60">
+                                <span class="text-gray-500 text-[10px]">${dateStr}</span>
+                                <span class="font-black text-pitim-gold">${formatBRL(ord.total)}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                container.innerHTML = `<div class="text-center py-6 text-red-400 text-xs">Erro ao buscar pedidos.</div>`;
+            }
+        }
+
+        // Start
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

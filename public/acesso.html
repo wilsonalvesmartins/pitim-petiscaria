@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Master - Pitim Petiscaria</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pitim: {
+                            dark: '#0c0c0e',
+                            card: '#16161a',
+                            cardHover: '#1f1f24',
+                            border: '#2a2a32',
+                            gold: '#fbbf24',
+                            amber: '#f59e0b',
+                            fire: '#ea580c',
+                            red: '#dc2626'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0c0c0e;
+            color: #f3f4f6;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Outfit', sans-serif;
+        }
+        .fire-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.35);
+        }
+        .fire-btn:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+            box-shadow: 0 6px 20px rgba(234, 88, 12, 0.5);
+        }
+        .glass-header {
+            background: rgba(12, 12, 14, 0.92);
+            backdrop-filter: blur(12px);
+        }
+        @media print {
+            body * { visibility: hidden; }
+            #print-receipt, #print-receipt * { visibility: visible; }
+            #print-receipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 80mm;
+                padding: 5mm;
+                font-family: monospace;
+                font-size: 12px;
+                color: black;
+                background: white;
+            }
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .alert-pulse {
+            animation: pulse-ring 2s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Thermal Print Container (Invisible on Screen, Visible on Print) -->
+    <div id="print-receipt" class="hidden"></div>
+
+    <!-- Login View (Shown when not authenticated) -->
+    <div id="login-view" class="flex-grow flex items-center justify-center p-4">
+        <div class="bg-pitim-card border border-pitim-border w-full max-w-md rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-36 h-36 bg-pitim-fire/20 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="text-center mb-6">
+                <img src="/img/logo.png" alt="Logo" class="w-20 h-20 mx-auto object-contain rounded-full border-2 border-pitim-amber shadow-xl mb-3">
+                <h1 class="text-2xl font-black text-white">ACESSO MASTER</h1>
+                <p class="text-xs text-gray-400 mt-1">Pitim Petiscaria & Espetos</p>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Usuário</label>
+                    <input 
+                        type="text" 
+                        id="login-user" 
+                        value="admin"
+                        placeholder="admin" 
+                        class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber transition"
+                        required
+                    >
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Senha</label>
+                    <input 
+                        type="password" 
+                        id="login-pass" 
+                        value="admin123"
+                        placeholder="admin123" 
+                        class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pitim-amber transition"
+                        required
+                    >
+                </div>
+                <div id="login-error" class="hidden p-3 bg-red-950/80 border border-red-500/40 rounded-xl text-red-200 text-xs"></div>
+                <button type="submit" id="login-btn" class="w-full fire-btn text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition">
+                    Entrar no Painel
+                </button>
+            </form>
+
+            <div class="text-center mt-6">
+                <a href="/" class="text-xs text-gray-500 hover:text-pitim-amber transition">
+                    ← Voltar ao Cardápio
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard View (Shown when authenticated) -->
+    <div id="dashboard-view" class="hidden flex-grow flex flex-col">
+        
+        <!-- Top Navbar -->
+        <header class="glass-header border-b border-pitim-border sticky top-0 z-40 px-4 py-3">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <img src="/img/logo.png" alt="Logo" class="w-10 h-10 object-contain rounded-full border border-pitim-amber shadow">
+                    <div>
+                        <h1 class="text-base font-black text-white flex items-center gap-1.5">
+                            PAINEL MASTER <span class="text-xs bg-pitim-amber text-black px-2 py-0.5 rounded-full font-bold">PITIM</span>
+                        </h1>
+                        <p class="text-[11px] text-gray-400">Gestão de Delivery & Comandas</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex items-center gap-1.5 bg-pitim-dark p-1 rounded-xl border border-pitim-border text-xs font-bold">
+                    <button onclick="setTab('orders')" id="tab-btn-orders" class="px-3.5 py-1.5 rounded-lg bg-pitim-amber text-black transition flex items-center gap-1.5 shadow">
+                        <span>📦 Pedidos</span>
+                        <span id="pending-badge" class="hidden px-1.5 py-0.2 bg-red-600 text-white rounded-full text-[10px] font-black">0</span>
+                    </button>
+                    <button onclick="setTab('menu')" id="tab-btn-menu" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition flex items-center gap-1.5">
+                        <span>📋 Cardápio & Preços</span>
+                    </button>
+                    <button onclick="setTab('settings')" id="tab-btn-settings" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition flex items-center gap-1.5">
+                        <span>⚙️ Configurações</span>
+                    </button>
+                </nav>
+
+                <!-- Audio Alert Control & Logout -->
+                <div class="flex items-center gap-2">
+                    <button 
+                        id="audio-toggle-btn" 
+                        onclick="toggleAudioAlert()" 
+                        class="px-3 py-1.5 rounded-xl border border-pitim-border bg-pitim-card text-xs font-bold text-pitim-gold hover:border-pitim-amber transition flex items-center gap-1.5"
+                        title="Ativar ou desativar som de novo pedido"
+                    >
+                        <span id="audio-icon">🔔</span>
+                        <span id="audio-text">Som Ativo</span>
+                    </button>
+                    <a href="/" target="_blank" class="px-3 py-1.5 rounded-xl border border-pitim-border bg-pitim-card text-xs font-bold text-gray-300 hover:text-white transition flex items-center gap-1" title="Ver Cardápio Público">
+                        <span>🌐</span>
+                        <span class="hidden sm:inline">Ver Loja</span>
+                    </a>
+                    <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-400 rounded-xl hover:bg-pitim-card transition" title="Sair">
+                        🚪
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="max-w-7xl mx-auto w-full p-4 flex-grow">
+
+            <!-- TAB 1: PEDIDOS (LIVE ORDERS) -->
+            <section id="tab-content-orders" class="space-y-4">
+                
+                <!-- Quick Stats & Filter Bar -->
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-pitim-card border border-pitim-border rounded-2xl p-4 shadow">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">📊</span>
+                        <div>
+                            <div class="text-xs font-bold uppercase tracking-wider text-gray-400">Visão Geral Hoje</div>
+                            <div class="text-sm font-black text-white flex items-center gap-3 mt-0.5">
+                                <span>Total: <strong id="stats-total-orders" class="text-pitim-gold">0</strong> pedidos</span>
+                                <span>•</span>
+                                <span>Faturamento: <strong id="stats-total-revenue" class="text-emerald-400">R$ 0,00</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter pills -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-none text-xs font-bold">
+                        <button onclick="setOrdersFilter('todos')" id="filter-todos" class="px-3 py-1.5 rounded-lg bg-pitim-amber text-black shadow">Todos</button>
+                        <button onclick="setOrdersFilter('Pendente')" id="filter-pendente" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white bg-pitim-dark border border-pitim-border">Pendentes</button>
+                        <button onclick="setOrdersFilter('Preparando')" id="filter-preparando" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white bg-pitim-dark border border-pitim-border">Em Preparo</button>
+                        <button onclick="setOrdersFilter('Concluído')" id="filter-concluido" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white bg-pitim-dark border border-pitim-border">Concluídos</button>
+                    </div>
+                </div>
+
+                <!-- Orders Grid -->
+                <div id="orders-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <div id="orders-empty" class="hidden text-center py-16 text-gray-500">
+                    <span class="text-5xl block mb-2">🍢</span>
+                    <p class="text-base font-bold text-gray-400">Nenhum pedido encontrado</p>
+                    <p class="text-xs text-gray-600 mt-1">Os pedidos feitos no cardápio virtual aparecerão aqui em tempo real com som!</p>
+                </div>
+
+            </section>
+
+            <!-- TAB 2: GESTÃO DO CARDÁPIO & PREÇOS -->
+            <section id="tab-content-menu" class="hidden space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-pitim-card border border-pitim-border rounded-2xl p-4 shadow">
+                    <div>
+                        <h2 class="text-base font-black text-white">Cardápio & Gestão de Preços</h2>
+                        <p class="text-xs text-gray-400">Adicione novos itens, bebidas, altere preços e ative/desative produtos instantaneamente.</p>
+                    </div>
+                    <button onclick="openAddItemModal()" class="fire-btn px-4 py-2.5 rounded-xl text-xs font-black text-white flex items-center gap-1.5 shadow">
+                        <span>+</span>
+                        <span>Novo Item / Bebida</span>
+                    </button>
+                </div>
+
+                <div id="admin-menu-list" class="space-y-6">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 3: CONFIGURAÇÕES -->
+            <section id="tab-content-settings" class="hidden max-w-2xl mx-auto space-y-5">
+                <div class="bg-pitim-card border border-pitim-border rounded-2xl p-6 shadow space-y-6">
+                    <h2 class="text-lg font-black text-white border-b border-pitim-border pb-3">Configurações do Estabelecimento</h2>
+                    
+                    <!-- Store Status -->
+                    <div class="flex items-center justify-between p-4 bg-pitim-dark rounded-xl border border-pitim-border">
+                        <div>
+                            <span class="text-sm font-bold text-white block">Status da Petiscaria</span>
+                            <span class="text-xs text-gray-400">Quando fechado, clientes são avisados e não podem finalizar pedidos.</span>
+                        </div>
+                        <button id="store-status-btn" onclick="toggleStoreOpen()" class="px-4 py-2 rounded-xl text-xs font-black transition shadow">
+                            Aberto
+                        </button>
+                    </div>
+
+                    <!-- Delivery Settings -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Taxa de Entrega Padrão (R$)</label>
+                            <input type="number" step="0.50" id="setting-delivery-fee" class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Tempo Estimado de Entrega</label>
+                            <input type="text" id="setting-delivery-time" placeholder="40 a 50 minutos" class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber">
+                        </div>
+                    </div>
+
+                    <!-- PIX Settings -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Chave PIX</label>
+                            <input type="text" id="setting-pix-key" placeholder="Telefone, CNPJ, e-mail..." class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Nome do Titular do PIX</label>
+                            <input type="text" id="setting-pix-name" placeholder="Pitim Petiscaria" class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber">
+                        </div>
+                    </div>
+
+                    <!-- Direct HTTP / Chatwoot Settings -->
+                    <div class="border-t border-pitim-border pt-5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm font-bold text-pitim-gold flex items-center gap-1.5">
+                                    <span>🌐 Disparo HTTP Direto (Chatwoot / Webhook)</span>
+                                </h3>
+                                <p class="text-xs text-gray-400 mt-0.5">Envia requisição HTTP direta com os dados do pedido a cada nova comanda.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="setting-http-enabled" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-pitim-amber"></div>
+                            </label>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">URL do Endpoint HTTP</label>
+                            <input type="url" id="setting-http-url" placeholder="https://chatwoot.cajuru.cloud/api/v1/widget/messages ou webhook" class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber font-mono">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Método</label>
+                                <select id="setting-http-method" class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber">
+                                    <option value="POST">POST</option>
+                                    <option value="PUT">PUT</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Headers JSON</label>
+                                <input type="text" id="setting-http-headers" value='{"Content-Type": "application/json"}' class="w-full p-3 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white focus:outline-none focus:border-pitim-amber font-mono">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 pt-2">
+                            <button onclick="testHttpDispatch()" type="button" class="px-4 py-2.5 rounded-xl bg-pitim-card border border-pitim-gold/40 text-xs font-bold text-pitim-gold hover:bg-pitim-amber hover:text-black transition flex items-center gap-1.5 shadow">
+                                <span>⚡</span>
+                                <span>Testar Disparo HTTP Agora</span>
+                            </button>
+                            <span id="test-http-result" class="text-xs font-mono text-gray-400"></span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-pitim-border">
+                        <button onclick="saveSettings()" class="w-full fire-btn text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition">
+                            Salvar Todas as Configurações
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modal: Adicionar / Editar Item -->
+    <div id="item-admin-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-pitim-card border border-pitim-border w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+            <div class="flex items-center justify-between mb-4 border-b border-pitim-border pb-3">
+                <h3 id="modal-item-title" class="text-lg font-black text-white">Novo Item no Cardápio</h3>
+                <button onclick="closeItemAdminModal()" class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+            </div>
+
+            <form id="item-form" onsubmit="saveItemForm(event)" class="space-y-3.5">
+                <input type="hidden" id="form-item-id">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Categoria</label>
+                    <input type="text" id="form-item-category" list="category-suggestions" placeholder="Espetos na Brasa, Porções, Cervejas..." class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber" required>
+                    <datalist id="category-suggestions">
+                        <option value="Espetos na Brasa">
+                        <option value="Porções & Petiscos">
+                        <option value="Bolinhos Especiais">
+                        <option value="Cervejas">
+                        <option value="Refrigerantes & Bebidas">
+                    </datalist>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Nome do Produto</label>
+                    <input type="text" id="form-item-name" placeholder="Ex: Espeto de Picanha" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber" required>
+                </div>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Preço (R$)</label>
+                        <input type="number" step="0.50" id="form-item-price" placeholder="10.00" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Ordem de Exibição</label>
+                        <input type="number" id="form-item-sort" value="0" class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Descrição</label>
+                    <textarea id="form-item-desc" rows="2" placeholder="Ingredientes e detalhes..." class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-sm text-white focus:outline-none focus:border-pitim-amber resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">URL da Imagem</label>
+                    <input type="text" id="form-item-img" placeholder="/img/... ou https://..." class="w-full p-2.5 rounded-xl bg-pitim-dark border border-pitim-border text-xs text-white focus:outline-none focus:border-pitim-amber">
+                </div>
+                <div class="flex items-center gap-2 pt-1">
+                    <input type="checkbox" id="form-item-active" checked class="w-4 h-4 rounded text-pitim-amber focus:ring-0">
+                    <label for="form-item-active" class="text-xs font-bold text-gray-300">Item Ativo para Vendas</label>
+                </div>
+
+                <div class="pt-3 border-t border-pitim-border flex gap-2">
+                    <button type="button" onclick="closeItemAdminModal()" class="w-1/2 py-2.5 rounded-xl bg-pitim-card border border-pitim-border text-xs font-bold text-gray-400 hover:text-white">Cancelar</button>
+                    <button type="submit" class="w-1/2 fire-btn text-white font-black py-2.5 rounded-xl text-xs shadow-lg">Salvar Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const formatBRL = (val) => Number(val).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        const adminState = {
+            token: localStorage.getItem('pitim_master_token') || null,
+            orders: [],
+            items: [],
+            settings: {},
+            currentTab: 'orders',
+            ordersFilter: 'todos',
+            audioEnabled: true,
+            audioCtx: null,
+            pollingInterval: null,
+            lastKnownOrderCount: 0
+        };
+
+        // Initialize Web Audio API Chime Synth
+        function initAudio() {
+            if (!adminState.audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) adminState.audioCtx = new AudioContext();
+            }
+            if (adminState.audioCtx && adminState.audioCtx.state === 'suspended') {
+                adminState.audioCtx.resume();
+            }
+        }
+
+        function playDingSound() {
+            if (!adminState.audioEnabled) return;
+            initAudio();
+            if (!adminState.audioCtx) return;
+
+            const ctx = adminState.audioCtx;
+            const now = ctx.currentTime;
+
+            // Tone 1: 587.33 Hz (D5)
+            const osc1 = ctx.createOscillator();
+            const gain1 = ctx.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(587.33, now);
+            gain1.gain.setValueAtTime(0.3, now);
+            gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+            osc1.connect(gain1);
+            gain1.connect(ctx.destination);
+            osc1.start(now);
+            osc1.stop(now + 0.8);
+
+            // Tone 2: 880 Hz (A5)
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(880, now + 0.15);
+            gain2.gain.setValueAtTime(0.4, now + 0.15);
+            gain2.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            osc2.start(now + 0.15);
+            osc2.stop(now + 1.2);
+        }
+
+        function toggleAudioAlert() {
+            adminState.audioEnabled = !adminState.audioEnabled;
+            const icon = document.getElementById('audio-icon');
+            const text = document.getElementById('audio-text');
+            if (adminState.audioEnabled) {
+                icon.innerText = '🔔';
+                text.innerText = 'Som Ativo';
+                playDingSound();
+            } else {
+                icon.innerText = '🔕';
+                text.innerText = 'Som Mudo';
+            }
+        }
+
+        function authHeaders() {
+            return {
+                'Authorization': `Bearer ${adminState.token}`,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        // Authentication Flow
+        async function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+            const errDiv = document.getElementById('login-error');
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    throw new Error(data.error || 'Credenciais inválidas');
+                }
+
+                adminState.token = data.token;
+                localStorage.setItem('pitim_master_token', adminState.token);
+                initAudio();
+                checkAuth();
+            } catch (err) {
+                errDiv.innerText = err.message;
+                errDiv.classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('pitim_master_token');
+            adminState.token = null;
+            if (adminState.pollingInterval) clearInterval(adminState.pollingInterval);
+            checkAuth();
+        }
+
+        function checkAuth() {
+            const loginView = document.getElementById('login-view');
+            const dashView = document.getElementById('dashboard-view');
+
+            if (adminState.token) {
+                loginView.classList.add('hidden');
+                dashView.classList.remove('hidden');
+                startPolling();
+                loadDashboardData();
+            } else {
+                loginView.classList.remove('hidden');
+                dashView.classList.add('hidden');
+            }
+        }
+
+        // Navigation Tabs
+        function setTab(tab) {
+            adminState.currentTab = tab;
+            ['orders', 'menu', 'settings'].forEach(t => {
+                const content = document.getElementById(`tab-content-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tab) {
+                    content.classList.remove('hidden');
+                    btn.className = "px-3.5 py-1.5 rounded-lg bg-pitim-amber text-black transition flex items-center gap-1.5 shadow font-black";
+                } else {
+                    content.classList.add('hidden');
+                    btn.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition flex items-center gap-1.5 font-bold";
+                }
+            });
+
+            if (tab === 'menu') loadAdminMenu();
+            if (tab === 'settings') loadAdminSettings();
+        }
+
+        // Polling loop for live orders
+        function startPolling() {
+            if (adminState.pollingInterval) clearInterval(adminState.pollingInterval);
+            adminState.pollingInterval = setInterval(loadOrders, 3500);
+        }
+
+        async function loadDashboardData() {
+            await Promise.all([loadOrders(), loadAdminSettings(), loadAdminMenu()]);
+        }
+
+        // Load Orders
+        async function loadOrders() {
+            if (!adminState.token) return;
+            try {
+                const res = await fetch('/api/admin/orders', { headers: authHeaders() });
+                if (res.status === 401) return logout();
+                const orders = await res.json();
+                
+                // Check if new pending order arrived
+                const pendingOrders = orders.filter(o => o.status === 'Pendente');
+                const badge = document.getElementById('pending-badge');
+                if (pendingOrders.length > 0) {
+                    badge.innerText = pendingOrders.length;
+                    badge.classList.remove('hidden');
+
+                    // If more pending orders than previously, play chime!
+                    if (pendingOrders.length > adminState.lastKnownOrderCount) {
+                        playDingSound();
+                    }
+                } else {
+                    badge.classList.add('hidden');
+                }
+                adminState.lastKnownOrderCount = pendingOrders.length;
+
+                adminState.orders = orders;
+                renderOrders();
+                renderStats();
+            } catch (err) {
+                console.error("Erro ao carregar pedidos:", err);
+            }
+        }
+
+        function setOrdersFilter(status) {
+            adminState.ordersFilter = status;
+            ['todos', 'pendente', 'preparando', 'concluido'].forEach(s => {
+                const btn = document.getElementById(`filter-${s}`);
+                if (s.toLowerCase() === status.toLowerCase()) {
+                    btn.className = "px-3 py-1.5 rounded-lg bg-pitim-amber text-black shadow font-black";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg text-gray-400 hover:text-white bg-pitim-dark border border-pitim-border font-bold";
+                }
+            });
+            renderOrders();
+        }
+
+        function renderOrders() {
+            const grid = document.getElementById('orders-grid');
+            const empty = document.getElementById('orders-empty');
+            if (!grid) return;
+
+            let filtered = adminState.orders;
+            if (adminState.ordersFilter !== 'todos') {
+                filtered = adminState.orders.filter(o => o.status.toLowerCase() === adminState.ordersFilter.toLowerCase());
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+
+            grid.innerHTML = filtered.map(ord => {
+                let items = [];
+                try { items = JSON.parse(ord.items_json); } catch(e) {}
+
+                const statusBadges = {
+                    'Pendente': 'bg-amber-950/80 border-amber-500/50 text-amber-300 alert-pulse',
+                    'Preparando': 'bg-blue-950/80 border-blue-500/50 text-blue-300',
+                    'Saiu para Entrega': 'bg-purple-950/80 border-purple-500/50 text-purple-300',
+                    'Pronto para Retirada': 'bg-purple-950/80 border-purple-500/50 text-purple-300',
+                    'Concluído': 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300',
+                    'Cancelado': 'bg-red-950/80 border-red-500/50 text-red-400'
+                };
+                const badgeClass = statusBadges[ord.status] || 'bg-gray-800 text-gray-300';
+                const dateStr = new Date(ord.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+                const addr = ord.type === 'delivery' 
+                    ? `${ord.customer_address || ''}${ord.customer_number ? ', Nº ' + ord.customer_number : ''}${ord.customer_neighborhood ? ' - ' + ord.customer_neighborhood : ''}${ord.customer_complement ? ' (' + ord.customer_complement + ')' : ''}`
+                    : '🏪 Retirada no Balcão';
+
+                return `
+                    <div class="bg-pitim-card border border-pitim-border rounded-2xl p-4 shadow-xl flex flex-col justify-between space-y-3.5 hover:border-pitim-border/80 transition">
+                        <!-- Card Header -->
+                        <div class="flex items-center justify-between border-b border-pitim-border/60 pb-2.5">
+                            <div>
+                                <span class="text-sm font-black text-white">#${ord.id} - ${ord.customer_name}</span>
+                                <div class="text-[11px] text-gray-400 flex items-center gap-1.5 mt-0.5">
+                                    <span>🕒 ${dateStr}</span>
+                                    <span>•</span>
+                                    <span class="font-semibold text-pitim-gold">${ord.type === 'delivery' ? '🛵 Entrega' : '🏪 Retirada'}</span>
+                                </div>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-black border ${badgeClass}">
+                                ${ord.status}
+                            </span>
+                        </div>
+
+                        <!-- Customer & Address -->
+                        <div class="text-xs space-y-1 bg-pitim-dark/60 p-2.5 rounded-xl border border-pitim-border/50">
+                            <div class="text-gray-300 flex items-center justify-between">
+                                <span>📱 ${ord.customer_whatsapp}</span>
+                                <a href="https://wa.me/55${ord.customer_whatsapp.replace(/\D/g, '')}" target="_blank" class="text-emerald-400 hover:underline font-bold text-[11px]">
+                                    Abrir WhatsApp ↗
+                                </a>
+                            </div>
+                            <div class="text-gray-400 text-[11px] leading-tight">📍 ${addr}</div>
+                            ${ord.notes ? `<div class="text-pitim-amber text-[11px] italic pt-1">Obs: ${ord.notes}</div>` : ''}
+                        </div>
+
+                        <!-- Items List -->
+                        <div class="space-y-1 text-xs">
+                            ${items.map(it => `
+                                <div class="flex justify-between text-gray-300">
+                                    <span><strong>${it.quantity}x</strong> ${it.name} ${it.notes ? `<span class="text-gray-500 italic text-[11px]">(${it.notes})</span>` : ''}</span>
+                                    <span class="text-gray-400">${formatBRL(it.price * it.quantity)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <!-- Totals & Payment -->
+                        <div class="pt-2 border-t border-pitim-border flex items-center justify-between text-xs">
+                            <div>
+                                <span class="text-[11px] text-gray-400 block">${ord.payment_method}</span>
+                                ${ord.change_for ? `<span class="text-[10px] text-pitim-gold">Troco p/ ${formatBRL(ord.change_for)}</span>` : ''}
+                            </div>
+                            <span class="text-base font-black text-pitim-gold">${formatBRL(ord.total)}</span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            ${ord.status === 'Pendente' ? `
+                                <button onclick="updateOrderStatus(${ord.id}, 'Preparando')" class="col-span-2 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs shadow transition">
+                                    👨‍🍳 Aceitar / Em Preparo
+                                </button>
+                            ` : ''}
+                            ${ord.status === 'Preparando' ? `
+                                <button onclick="updateOrderStatus(${ord.id}, '${ord.type === 'delivery' ? 'Saiu para Entrega' : 'Pronto para Retirada'}')" class="col-span-2 py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs shadow transition">
+                                    ${ord.type === 'delivery' ? '🛵 Despachar p/ Entrega' : '📦 Pronto p/ Retirada'}
+                                </button>
+                            ` : ''}
+                            ${ord.status === 'Saiu para Entrega' || ord.status === 'Pronto para Retirada' ? `
+                                <button onclick="updateOrderStatus(${ord.id}, 'Concluído')" class="col-span-2 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow transition">
+                                    ✅ Concluir Pedido
+                                </button>
+                            ` : ''}
+                            <button onclick="printOrder(${ord.id})" class="py-1.5 px-2.5 rounded-lg bg-pitim-dark border border-pitim-border text-xs text-gray-300 hover:text-white transition flex items-center justify-center gap-1">
+                                <span>🖨️</span>
+                                <span>Imprimir</span>
+                            </button>
+                            <button onclick="deleteOrder(${ord.id})" class="py-1.5 px-2.5 rounded-lg bg-pitim-dark border border-red-500/30 text-xs text-red-400 hover:bg-red-950/40 transition">
+                                Excluir
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderStats() {
+            const todayOrders = adminState.orders;
+            const totalCount = todayOrders.length;
+            const revenue = todayOrders
+                .filter(o => o.status !== 'Cancelado')
+                .reduce((s, o) => s + Number(o.total || 0), 0);
+
+            document.getElementById('stats-total-orders').innerText = totalCount;
+            document.getElementById('stats-total-revenue').innerText = formatBRL(revenue);
+        }
+
+        async function updateOrderStatus(id, newStatus) {
+            try {
+                const res = await fetch(`/api/admin/orders/${id}/status`, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ status: newStatus })
+                });
+                if (res.ok) loadOrders();
+            } catch (err) {
+                alert('Erro ao atualizar status: ' + err.message);
+            }
+        }
+
+        async function deleteOrder(id) {
+            if (!confirm(`Tem certeza que deseja excluir o pedido #${id}?`)) return;
+            try {
+                const res = await fetch(`/api/admin/orders/${id}`, {
+                    method: 'DELETE',
+                    headers: authHeaders()
+                });
+                if (res.ok) loadOrders();
+            } catch (err) {
+                alert('Erro ao excluir pedido: ' + err.message);
+            }
+        }
+
+        // Thermal Receipt Print
+        function printOrder(id) {
+            const ord = adminState.orders.find(o => o.id === id);
+            if (!ord) return;
+
+            let items = [];
+            try { items = JSON.parse(ord.items_json); } catch(e) {}
+            const dateStr = new Date(ord.created_at).toLocaleString('pt-BR');
+
+            const container = document.getElementById('print-receipt');
+            container.innerHTML = `
+                <div style="text-align: center; border-bottom: 1px dashed black; padding-bottom: 5px; margin-bottom: 8px;">
+                    <h2 style="margin: 0; font-size: 16px; font-weight: bold;">PITIM PETISCARIA & ESPETOS</h2>
+                    <p style="margin: 2px 0; font-size: 11px;">Comanda de Pedido #${ord.id}</p>
+                    <p style="margin: 0; font-size: 10px;">${dateStr}</p>
+                </div>
+                <div style="font-size: 12px; margin-bottom: 8px;">
+                    <strong>CLIENTE:</strong> ${ord.customer_name}<br>
+                    <strong>FONE:</strong> ${ord.customer_whatsapp}<br>
+                    <strong>TIPO:</strong> ${ord.type === 'delivery' ? 'ENTREGA EM DOMICÍLIO' : 'RETIRADA NO BALCÃO'}<br>
+                    ${ord.type === 'delivery' ? `<strong>ENDEREÇO:</strong> ${ord.customer_address}, Nº ${ord.customer_number || ''} ${ord.customer_neighborhood || ''} ${ord.customer_complement ? '('+ord.customer_complement+')' : ''}<br>` : ''}
+                    ${ord.notes ? `<strong>OBS:</strong> ${ord.notes}<br>` : ''}
+                </div>
+                <div style="border-top: 1px dashed black; border-bottom: 1px dashed black; padding: 6px 0; margin-bottom: 8px;">
+                    <table style="width: 100%; font-size: 12px; text-align: left;">
+                        ${items.map(it => `
+                            <tr>
+                                <td style="vertical-align: top;">${it.quantity}x ${it.name} ${it.notes ? '<br><small>('+it.notes+')</small>' : ''}</td>
+                                <td style="text-align: right; vertical-align: top;">${formatBRL(it.price * it.quantity)}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                </div>
+                <div style="font-size: 12px; text-align: right; line-height: 1.4;">
+                    Subtotal: ${formatBRL(ord.subtotal)}<br>
+                    Taxa de Entrega: ${formatBRL(ord.delivery_fee)}<br>
+                    <strong style="font-size: 14px;">TOTAL: ${formatBRL(ord.total)}</strong><br>
+                    Pagamento: ${ord.payment_method} ${ord.change_for ? '(Troco p/ '+formatBRL(ord.change_for)+')' : ''}
+                </div>
+                <div style="text-align: center; margin-top: 12px; font-size: 10px; border-top: 1px dashed black; padding-top: 5px;">
+                    Agradecemos a preferência!
+                </div>
+            `;
+            window.print();
+        }
+
+        // TAB 2: MENU & PRICES MANAGEMENT
+        async function loadAdminMenu() {
+            try {
+                const res = await fetch('/api/admin/items', { headers: authHeaders() });
+                adminState.items = await res.json();
+                renderAdminMenu();
+            } catch (err) {
+                console.error("Erro ao carregar cardápio admin:", err);
+            }
+        }
+
+        function renderAdminMenu() {
+            const container = document.getElementById('admin-menu-list');
+            if (!container) return;
+
+            const groups = {};
+            adminState.items.forEach(it => {
+                if (!groups[it.category]) groups[it.category] = [];
+                groups[it.category].push(it);
+            });
+
+            container.innerHTML = Object.entries(groups).map(([cat, items]) => `
+                <div class="bg-pitim-card border border-pitim-border rounded-2xl p-4 shadow space-y-3">
+                    <div class="flex items-center justify-between border-b border-pitim-border pb-2">
+                        <h3 class="text-sm font-black text-pitim-amber uppercase tracking-wider">${cat}</h3>
+                        <span class="text-xs text-gray-500">${items.length} itens</span>
+                    </div>
+                    <div class="divide-y divide-pitim-border/50">
+                        ${items.map(it => `
+                            <div class="py-2.5 flex flex-wrap items-center justify-between gap-3 ${it.active ? '' : 'opacity-50'}">
+                                <div class="flex items-center gap-3">
+                                    <img src="${it.image_url || '/img/logo.png'}" class="w-10 h-10 object-cover rounded-lg bg-pitim-dark border border-pitim-border">
+                                    <div>
+                                        <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                                            <span>${it.name}</span>
+                                            ${!it.active ? '<span class="text-[10px] bg-red-950 text-red-400 px-1.5 py-0.2 rounded border border-red-500/30">Esgotado</span>' : ''}
+                                        </div>
+                                        <div class="text-[11px] text-gray-400 line-clamp-1">${it.description || ''}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-xs text-gray-500">R$</span>
+                                        <input 
+                                            type="number" 
+                                            step="0.50" 
+                                            value="${Number(it.price).toFixed(2)}" 
+                                            onchange="quickUpdatePrice(${it.id}, this.value)"
+                                            class="w-20 p-1.5 rounded-lg bg-pitim-dark border border-pitim-border text-xs font-bold text-pitim-gold text-right focus:border-pitim-amber focus:outline-none"
+                                        >
+                                    </div>
+                                    <button onclick="toggleItemActive(${it.id}, ${it.active ? 0 : 1})" class="p-1.5 rounded-lg text-xs font-bold ${it.active ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30' : 'bg-red-950/60 text-red-400 border border-red-500/30'}">
+                                        ${it.active ? 'Ativo' : 'Pausado'}
+                                    </button>
+                                    <button onclick="openEditItemModal(${it.id})" class="p-1.5 text-xs text-gray-400 hover:text-white" title="Editar Completo">
+                                        ✏️
+                                    </button>
+                                    <button onclick="deleteMenuItem(${it.id})" class="p-1.5 text-xs text-red-400 hover:text-red-300" title="Excluir Item">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function quickUpdatePrice(id, newPrice) {
+            try {
+                await fetch(`/api/admin/items/${id}`, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ price: parseFloat(newPrice) })
+                });
+            } catch (err) {
+                alert('Erro ao alterar preço: ' + err.message);
+            }
+        }
+
+        async function toggleItemActive(id, newActive) {
+            try {
+                await fetch(`/api/admin/items/${id}`, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ active: newActive })
+                });
+                loadAdminMenu();
+            } catch (err) {
+                alert('Erro ao alternar status do item: ' + err.message);
+            }
+        }
+
+        async function deleteMenuItem(id) {
+            if (!confirm('Deseja excluir este item permanentemente do cardápio?')) return;
+            try {
+                await fetch(`/api/admin/items/${id}`, {
+                    method: 'DELETE',
+                    headers: authHeaders()
+                });
+                loadAdminMenu();
+            } catch (err) {
+                alert('Erro ao excluir item: ' + err.message);
+            }
+        }
+
+        function openAddItemModal() {
+            document.getElementById('modal-item-title').innerText = "Novo Item no Cardápio";
+            document.getElementById('form-item-id').value = "";
+            document.getElementById('form-item-category').value = "";
+            document.getElementById('form-item-name').value = "";
+            document.getElementById('form-item-price').value = "";
+            document.getElementById('form-item-sort').value = "0";
+            document.getElementById('form-item-desc').value = "";
+            document.getElementById('form-item-img').value = "";
+            document.getElementById('form-item-active').checked = true;
+            document.getElementById('item-admin-modal').classList.remove('hidden');
+        }
+
+        function openEditItemModal(id) {
+            const it = adminState.items.find(i => i.id === id);
+            if (!it) return;
+
+            document.getElementById('modal-item-title').innerText = "Editar Item";
+            document.getElementById('form-item-id').value = it.id;
+            document.getElementById('form-item-category').value = it.category;
+            document.getElementById('form-item-name').value = it.name;
+            document.getElementById('form-item-price').value = it.price;
+            document.getElementById('form-item-sort').value = it.sort_order || 0;
+            document.getElementById('form-item-desc').value = it.description || '';
+            document.getElementById('form-item-img').value = it.image_url || '';
+            document.getElementById('form-item-active').checked = it.active === 1;
+            document.getElementById('item-admin-modal').classList.remove('hidden');
+        }
+
+        function closeItemAdminModal() {
+            document.getElementById('item-admin-modal').classList.add('hidden');
+        }
+
+        async function saveItemForm(e) {
+            e.preventDefault();
+            const id = document.getElementById('form-item-id').value;
+            const category = document.getElementById('form-item-category').value.trim();
+            const name = document.getElementById('form-item-name').value.trim();
+            const price = parseFloat(document.getElementById('form-item-price').value);
+            const sort_order = parseInt(document.getElementById('form-item-sort').value) || 0;
+            const description = document.getElementById('form-item-desc').value.trim();
+            const image_url = document.getElementById('form-item-img').value.trim();
+            const active = document.getElementById('form-item-active').checked ? 1 : 0;
+
+            const payload = { category, name, price, sort_order, description, image_url, active };
+
+            try {
+                const url = id ? `/api/admin/items/${id}` : `/api/admin/items`;
+                const method = id ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method: method,
+                    headers: authHeaders(),
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    closeItemAdminModal();
+                    loadAdminMenu();
+                } else {
+                    const data = await res.json();
+                    alert('Erro: ' + (data.error || 'Falha ao salvar'));
+                }
+            } catch (err) {
+                alert('Erro ao salvar item: ' + err.message);
+            }
+        }
+
+        // TAB 3: SETTINGS
+        async function loadAdminSettings() {
+            try {
+                const res = await fetch('/api/admin/settings', { headers: authHeaders() });
+                const s = await res.json();
+                adminState.settings = s;
+
+                // Status Button
+                const btn = document.getElementById('store-status-btn');
+                if (s.is_open === '1') {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-black transition shadow bg-emerald-600 text-white hover:bg-emerald-500";
+                    btn.innerText = "🟢 Loja Aberta";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-black transition shadow bg-red-600 text-white hover:bg-red-500";
+                    btn.innerText = "🔴 Loja Fechada";
+                }
+
+                document.getElementById('setting-delivery-fee').value = s.delivery_fee || '8.00';
+                document.getElementById('setting-delivery-time').value = s.delivery_time || '40 a 50 minutos';
+                document.getElementById('setting-pix-key').value = s.pix_key || '';
+                document.getElementById('setting-pix-name').value = s.pix_name || '';
+
+                document.getElementById('setting-http-enabled').checked = s.direct_http_enabled !== '0';
+                document.getElementById('setting-http-url').value = s.direct_http_url || '';
+                document.getElementById('setting-http-method').value = s.direct_http_method || 'POST';
+                document.getElementById('setting-http-headers').value = s.direct_http_headers || '{"Content-Type": "application/json"}';
+
+            } catch (err) {
+                console.error("Erro ao carregar configurações:", err);
+            }
+        }
+
+        async function toggleStoreOpen() {
+            const current = adminState.settings.is_open === '1';
+            const newVal = current ? '0' : '1';
+            try {
+                await fetch('/api/admin/settings', {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ is_open: newVal })
+                });
+                loadAdminSettings();
+            } catch (err) {
+                alert('Erro ao alterar status da loja: ' + err.message);
+            }
+        }
+
+        async function saveSettings() {
+            const fee = document.getElementById('setting-delivery-fee').value;
+            const time = document.getElementById('setting-delivery-time').value;
+            const pixKey = document.getElementById('setting-pix-key').value;
+            const pixName = document.getElementById('setting-pix-name').value;
+
+            const httpEnabled = document.getElementById('setting-http-enabled').checked ? '1' : '0';
+            const httpUrl = document.getElementById('setting-http-url').value.trim();
+            const httpMethod = document.getElementById('setting-http-method').value;
+            const httpHeaders = document.getElementById('setting-http-headers').value.trim();
+
+            const payload = {
+                delivery_fee: fee,
+                delivery_time: time,
+                pix_key: pixKey,
+                pix_name: pixName,
+                direct_http_enabled: httpEnabled,
+                direct_http_url: httpUrl,
+                direct_http_method: httpMethod,
+                direct_http_headers: httpHeaders
+            };
+
+            try {
+                const res = await fetch('/api/admin/settings', {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    alert('Configurações salvas com sucesso!');
+                    loadAdminSettings();
+                }
+            } catch (err) {
+                alert('Erro ao salvar configurações: ' + err.message);
+            }
+        }
+
+        async function testHttpDispatch() {
+            const resSpan = document.getElementById('test-http-result');
+            resSpan.innerText = 'Enviando teste...';
+            try {
+                const res = await fetch('/api/admin/test-http', {
+                    method: 'POST',
+                    headers: authHeaders()
+                });
+                const data = await res.json();
+                if (data.success && data.result) {
+                    resSpan.innerText = `Status: ${data.result.status || 'Enviado'} (${data.result.sent ? 'OK' : 'Falha'})`;
+                    resSpan.className = data.result.sent ? 'text-xs font-mono text-emerald-400' : 'text-xs font-mono text-red-400';
+                } else {
+                    resSpan.innerText = 'Erro no envio';
+                    resSpan.className = 'text-xs font-mono text-red-400';
+                }
+            } catch (err) {
+                resSpan.innerText = 'Erro: ' + err.message;
+                resSpan.className = 'text-xs font-mono text-red-400';
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

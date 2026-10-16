@@ -1,18 +1,18 @@
+version: '3.8'
+
 services:
-  pitim-app:
+  delivery:
     build: .
-    container_name: pitim-petiscaria
-    restart: always
+    container_name: pitim-delivery-app
+    restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "3002:3002"
     environment:
-      - PORT=8000
+      - PORT=3002
       - DATA_DIR=/app/data
-      - ADMIN_USER=admin
-      - ADMIN_PASS=admin123
     volumes:
-      - pitim_data:/app/data
+      - pitim_delivery_data:/app/data
 
 volumes:
-  pitim_data:
-    name: pitim_data
+  pitim_delivery_data:
+    name: pitim_delivery_data
