@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pitim Petiscaria & Espeto - Menu Virtual</title>
+    <link rel="icon" type="image/png" href="/static/uploads/logo.png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pitim: {
+                            gold: '#f59e0b',
+                            amber: '#d97706',
+                            red: '#dc2626',
+                            dark: '#0f1115',
+                            card: '#181b22',
+                            border: '#2a2f3a',
+                            muted: '#9ca3af'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        display: ['Oswald', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0c0e12;
+            color: #f3f4f6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+        }
+        .card-glow:hover {
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+        @keyframes pulse-gold {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.85; }
+        }
+        .animate-pulse-gold {
+            animation: pulse-gold 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased pb-28">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-[#101217]/95 backdrop-blur-md border-b border-pitim-border/80 px-4 py-3 shadow-lg">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+                <img src="/static/uploads/logo.png" alt="Pitim Petiscaria" class="w-12 h-12 object-contain rounded-full border border-pitim-gold/40 p-0.5 bg-black/60 shadow">
+                <div>
+                    <h1 class="font-display tracking-wider text-xl font-bold uppercase text-white flex items-center gap-1.5">
+                        Pitim <span class="text-pitim-gold text-sm font-sans font-semibold tracking-normal px-1.5 py-0.5 rounded bg-pitim-gold/10 border border-pitim-gold/30">Petiscaria</span>
+                    </h1>
+                    <p class="text-xs text-gray-400 font-medium">Petiscos, Espetos & Chopp Gelado</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <!-- User / Table Identification pill -->
+                <button onclick="openTableModal()" id="user-pill" class="flex items-center space-x-1.5 bg-[#1a1e27] hover:bg-[#222834] text-xs font-semibold px-3 py-1.5 rounded-full border border-pitim-border text-gray-200 transition">
+                    <i class="fa-solid fa-location-dot text-pitim-gold"></i>
+                    <span id="user-pill-text">Identificar Mesa</span>
+                </button>
+
+                <!-- Comanda Button -->
+                <button onclick="openComandaModal()" class="relative flex items-center space-x-1.5 bg-pitim-gold hover:bg-pitim-amber text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-md transition transform active:scale-95">
+                    <i class="fa-solid fa-receipt text-sm"></i>
+                    <span class="hidden sm:inline">Minha</span> Comanda
+                    <span id="comanda-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#101217]">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-4xl mx-auto w-full px-4 pt-4 flex-1">
+
+        <!-- Banner Card -->
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1c140d] via-[#1f1912] to-[#14151b] border border-pitim-gold/25 p-5 mb-5 shadow-xl">
+            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-pitim-gold/15 text-pitim-gold border border-pitim-gold/30 text-xs font-bold mb-2">
+                        <i class="fa-solid fa-fire-flame-curved"></i> Cardápio Virtual Direto da Mesa
+                    </div>
+                    <h2 class="text-2xl font-display font-bold text-white tracking-wide">FAÇA SEU PEDIDO COM FACILIDADE</h2>
+                    <p class="text-xs sm:text-sm text-gray-300 max-w-lg mt-1">
+                        Selecione seus petiscos, espetos e bebidas. Cada pessoa pode pedir em sua comanda separada!
+                    </p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="openComandaModal()" class="text-xs font-bold px-4 py-2.5 rounded-xl bg-[#262b36] hover:bg-[#303644] text-white border border-gray-700 flex items-center gap-2 transition">
+                        <i class="fa-solid fa-clock-rotate-left text-pitim-gold"></i> Histórico (12h)
+                    </button>
+                </div>
+            </div>
+            <div class="absolute -right-8 -bottom-8 opacity-15 text-pitim-gold text-9xl pointer-events-none">
+                <i class="fa-solid fa-utensils"></i>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="relative mb-5">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" id="search-input" oninput="filterProducts()" placeholder="Buscar porções, espetos, cervejas..." 
+                   class="w-full bg-[#151820] text-sm text-white placeholder-gray-400 pl-11 pr-10 py-3 rounded-xl border border-pitim-border focus:border-pitim-gold focus:outline-none focus:ring-1 focus:ring-pitim-gold transition">
+            <button id="clear-search" onclick="clearSearch()" class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Category Sticky Filter Pills -->
+        <div class="sticky top-[69px] z-30 bg-[#0c0e12]/95 backdrop-blur-md py-2.5 -mx-4 px-4 border-b border-pitim-border/50 mb-5">
+            <div class="flex items-center space-x-2 overflow-x-auto hide-scrollbar pb-1 text-xs font-bold" id="categories-bar">
+                <button onclick="selectCategory('all')" data-cat="all" class="category-btn whitespace-nowrap px-4 py-2 rounded-xl bg-pitim-gold text-black transition shadow-sm">
+                    ✨ Todos os Itens
+                </button>
+                <button onclick="selectCategory('Porções & Petiscos')" data-cat="Porções & Petiscos" class="category-btn whitespace-nowrap px-4 py-2 rounded-xl bg-[#181b22] text-gray-300 hover:text-white border border-pitim-border transition">
+                    🍟 Porções
+                </button>
+                <button onclick="selectCategory('Bolinhos Especiais')" data-cat="Bolinhos Especiais" class="category-btn whitespace-nowrap px-4 py-2 rounded-xl bg-[#181b22] text-gray-300 hover:text-white border border-pitim-border transition">
+                    🥟 Bolinhos
+                </button>
+                <button onclick="selectCategory('Espetos na Brasa')" data-cat="Espetos na Brasa" class="category-btn whitespace-nowrap px-4 py-2 rounded-xl bg-[#181b22] text-gray-300 hover:text-white border border-pitim-border transition">
+                    🍢 Espetos
+                </button>
+                <button onclick="selectCategory('Cervejas Geladas')" data-cat="Cervejas Geladas" class="category-btn whitespace-nowrap px-4 py-2 rounded-xl bg-[#181b22] text-gray-300 hover:text-white border border-pitim-border transition">
+                    🍺 Cervejas
+                </button>
+                <button onclick="selectCategory('Refrigerantes & Bebidas')" data-cat="Refrigerantes & Bebidas" class="category-btn whitespace-nowrap px-4 py-2 rounded-xl bg-[#181b22] text-gray-300 hover:text-white border border-pitim-border transition">
+                    🥤 Bebidas
+                </button>
+            </div>
+        </div>
+
+        <!-- Products Section Container -->
+        <div id="products-container" class="space-y-8">
+            <!-- Dynamic sections will be injected here -->
+            <div class="flex justify-center py-16 text-gray-400">
+                <i class="fa-solid fa-spinner fa-spin text-2xl text-pitim-gold"></i>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Floating Cart Bar (Bottom) -->
+    <div id="cart-bar" class="hidden fixed bottom-0 left-0 right-0 z-40 bg-[#12141a]/95 backdrop-blur-md border-t border-pitim-gold/40 p-3 shadow-2xl transition-all duration-300">
+        <div class="max-w-4xl mx-auto flex items-center justify-between gap-3">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="openCartModal()">
+                <div class="relative bg-pitim-gold/20 text-pitim-gold border border-pitim-gold/40 w-12 h-12 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cart-bar-count" class="absolute -top-2 -right-2 bg-pitim-gold text-black font-extrabold text-xs w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 font-medium">Subtotal do Pedido</p>
+                    <p id="cart-bar-total" class="text-lg font-bold text-white font-display tracking-wide">R$ 0,00</p>
+                </div>
+            </div>
+            
+            <button onclick="openCartModal()" class="flex-1 max-w-xs gold-gradient hover:brightness-110 text-black font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 text-sm uppercase tracking-wide transition active:scale-95">
+                <span>Ver Pedido</span>
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Product Customization Modal -->
+    <div id="product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-[#181b22] border border-pitim-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transform transition-all animate-fadeIn">
+            <div class="relative h-48 bg-black/60 overflow-hidden flex items-center justify-center">
+                <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
+                <button onclick="closeProductModal()" class="absolute top-3 right-3 bg-black/60 text-white hover:bg-black w-8 h-8 rounded-full flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="absolute bottom-3 left-3 bg-black/80 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-pitim-border text-pitim-gold text-xs font-bold" id="modal-category">
+                </div>
+            </div>
+            
+            <div class="p-5">
+                <div class="flex items-start justify-between gap-3 mb-2">
+                    <h3 id="modal-name" class="text-xl font-bold text-white font-display tracking-wide"></h3>
+                    <span id="modal-price" class="text-xl font-bold text-pitim-gold whitespace-nowrap"></span>
+                </div>
+                <p id="modal-desc" class="text-xs text-gray-300 leading-relaxed mb-5"></p>
+                
+                <!-- Notes / Obs -->
+                <div class="mb-5">
+                    <label class="block text-xs font-bold text-gray-300 mb-1.5 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-pen-to-square text-pitim-gold"></i> Observação (Opcional):
+                    </label>
+                    <input type="text" id="modal-notes" placeholder="Ex: bem passada, sem cebola, limão extra..." 
+                           class="w-full bg-[#101217] text-xs text-white placeholder-gray-500 p-3 rounded-xl border border-pitim-border focus:border-pitim-gold focus:outline-none">
+                </div>
+
+                <!-- Quantity & Add to Cart -->
+                <div class="flex items-center justify-between gap-4 pt-2 border-t border-pitim-border">
+                    <div class="flex items-center bg-[#101217] rounded-xl border border-pitim-border p-1">
+                        <button onclick="changeModalQty(-1)" class="w-9 h-9 rounded-lg bg-[#1e222b] hover:bg-[#282d39] text-white flex items-center justify-center active:scale-95 transition">
+                            <i class="fa-solid fa-minus text-xs"></i>
+                        </button>
+                        <span id="modal-qty" class="w-10 text-center font-bold text-white text-sm">1</span>
+                        <button onclick="changeModalQty(1)" class="w-9 h-9 rounded-lg bg-[#1e222b] hover:bg-[#282d39] text-white flex items-center justify-center active:scale-95 transition">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                        </button>
+                    </div>
+
+                    <button onclick="addModalItemToCart()" class="flex-1 gold-gradient hover:brightness-110 text-black font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow-lg transition active:scale-95">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Adicionar • <span id="modal-subtotal"></span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart / Checkout Modal -->
+    <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-[#181b22] border border-pitim-border rounded-2xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
+            <!-- Header -->
+            <div class="p-4 border-b border-pitim-border flex items-center justify-between bg-[#12141a]">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-cart-shopping text-pitim-gold"></i>
+                    <h3 class="font-display font-bold text-lg text-white tracking-wide">Meu Pedido Atual</h3>
+                </div>
+                <button onclick="closeCartModal()" class="text-gray-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="p-4 overflow-y-auto space-y-4 flex-1">
+                <!-- Items list -->
+                <div id="cart-items-list" class="space-y-2.5">
+                    <!-- Dynamic cart items -->
+                </div>
+
+                <!-- Mesa e Nome Identification Section -->
+                <div class="bg-[#12141a] p-4 rounded-xl border border-pitim-border space-y-3">
+                    <div class="flex items-center gap-2 text-xs font-bold text-pitim-gold uppercase tracking-wider">
+                        <i class="fa-solid fa-user-tag"></i> Identificação da Comanda
+                    </div>
+                    <p class="text-[11px] text-gray-400 leading-normal">
+                        Informe sua mesa e nome. Seus pedidos ficarão salvos na sua <b>comanda digital individual</b>.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-300 mb-1">Número da Mesa *</label>
+                            <select id="checkout-table" class="w-full bg-[#1a1e27] text-white text-xs p-2.5 rounded-lg border border-pitim-border focus:border-pitim-gold focus:outline-none">
+                                <option value="">Selecione a Mesa...</option>
+                                <option value="Mesa 01">Mesa 01</option>
+                                <option value="Mesa 02">Mesa 02</option>
+                                <option value="Mesa 03">Mesa 03</option>
+                                <option value="Mesa 04">Mesa 04</option>
+                                <option value="Mesa 05">Mesa 05</option>
+                                <option value="Mesa 06">Mesa 06</option>
+                                <option value="Mesa 07">Mesa 07</option>
+                                <option value="Mesa 08">Mesa 08</option>
+                                <option value="Mesa 09">Mesa 09</option>
+                                <option value="Mesa 10">Mesa 10</option>
+                                <option value="Mesa 11">Mesa 11</option>
+                                <option value="Mesa 12">Mesa 12</option>
+                                <option value="Mesa 13">Mesa 13</option>
+                                <option value="Mesa 14">Mesa 14</option>
+                                <option value="Mesa 15">Mesa 15</option>
+                                <option value="Mesa Balcão">Mesa Balcão</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-300 mb-1">Seu Nome *</label>
+                            <input type="text" id="checkout-name" placeholder="Ex: Wilson" 
+                                   class="w-full bg-[#1a1e27] text-white text-xs p-2.5 rounded-lg border border-pitim-border focus:border-pitim-gold focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-300 mb-1">Observação Geral do Pedido (Opcional)</label>
+                        <input type="text" id="checkout-notes" placeholder="Ex: Mandar os espetos primeiro..." 
+                               class="w-full bg-[#1a1e27] text-white text-xs p-2.5 rounded-lg border border-pitim-border focus:border-pitim-gold focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Subtotal summary -->
+                <div class="flex items-center justify-between p-3 rounded-xl bg-black/40 border border-pitim-border">
+                    <span class="text-xs font-bold text-gray-300">Total deste envio:</span>
+                    <span id="cart-summary-total" class="text-xl font-bold text-pitim-gold font-display">R$ 0,00</span>
+                </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="p-4 border-t border-pitim-border bg-[#12141a] flex items-center justify-between gap-3">
+                <button onclick="closeCartModal()" class="px-4 py-2.5 rounded-xl bg-transparent hover:bg-white/5 text-gray-300 text-xs font-bold transition">
+                    Continuar Pedindo
+                </button>
+                <button onclick="submitOrder()" id="btn-submit-order" class="flex-1 gold-gradient hover:brightness-110 text-black font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow-lg transition active:scale-95">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>Confirmar Pedido</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comanda Digital Modal -->
+    <div id="comanda-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-[#181b22] border border-pitim-border rounded-2xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
+            <!-- Header -->
+            <div class="p-4 border-b border-pitim-border flex items-center justify-between bg-[#12141a]">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-receipt text-pitim-gold text-lg"></i>
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-white tracking-wide">Comanda Digital</h3>
+                        <p class="text-[10px] text-gray-400">Pitim Petiscaria • Histórico das últimas 12 horas</p>
+                    </div>
+                </div>
+                <button onclick="closeComandaModal()" class="text-gray-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Comanda Body -->
+            <div class="p-4 overflow-y-auto space-y-4 flex-1">
+                
+                <!-- Identification view if not authenticated -->
+                <div id="comanda-login-box" class="hidden bg-[#12141a] p-4 rounded-xl border border-pitim-border space-y-3">
+                    <p class="text-xs text-gray-300">
+                        Para acessar sua comanda com segurança e privacidade, informe a <b>Mesa</b> e o <b>Nome</b> cadastrados:
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-300 mb-1">Mesa *</label>
+                            <select id="comanda-input-table" class="w-full bg-[#1a1e27] text-white text-xs p-2.5 rounded-lg border border-pitim-border focus:border-pitim-gold focus:outline-none">
+                                <option value="">Selecione...</option>
+                                <option value="Mesa 01">Mesa 01</option>
+                                <option value="Mesa 02">Mesa 02</option>
+                                <option value="Mesa 03">Mesa 03</option>
+                                <option value="Mesa 04">Mesa 04</option>
+                                <option value="Mesa 05">Mesa 05</option>
+                                <option value="Mesa 06">Mesa 06</option>
+                                <option value="Mesa 07">Mesa 07</option>
+                                <option value="Mesa 08">Mesa 08</option>
+                                <option value="Mesa 09">Mesa 09</option>
+                                <option value="Mesa 10">Mesa 10</option>
+                                <option value="Mesa 11">Mesa 11</option>
+                                <option value="Mesa 12">Mesa 12</option>
+                                <option value="Mesa 13">Mesa 13</option>
+                                <option value="Mesa 14">Mesa 14</option>
+                                <option value="Mesa 15">Mesa 15</option>
+                                <option value="Mesa Balcão">Mesa Balcão</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-300 mb-1">Seu Nome *</label>
+                            <input type="text" id="comanda-input-name" placeholder="Ex: Wilson" 
+                                   class="w-full bg-[#1a1e27] text-white text-xs p-2.5 rounded-lg border border-pitim-border focus:border-pitim-gold focus:outline-none">
+                        </div>
+                    </div>
+                    <button onclick="loadComandaFromInput()" class="w-full gold-gradient text-black font-bold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass"></i> Consultar Minha Comanda
+                    </button>
+                </div>
+
+                <!-- Comanda Active Details -->
+                <div id="comanda-details-box" class="space-y-4">
+                    <!-- Client info Card -->
+                    <div class="bg-[#12141a] p-4 rounded-xl border border-pitim-border flex items-center justify-between">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="bg-pitim-gold/20 text-pitim-gold border border-pitim-gold/40 text-xs font-bold px-2.5 py-0.5 rounded-md" id="comanda-badge-table">Mesa --</span>
+                                <span class="text-sm font-bold text-white" id="comanda-badge-name">--</span>
+                            </div>
+                            <p class="text-[11px] text-gray-400 mt-1">
+                                Status: <span id="comanda-badge-status" class="font-semibold text-emerald-400">Aberta</span>
+                            </p>
+                        </div>
+                        <button onclick="switchComandaIdentity()" class="text-[11px] text-gray-400 hover:text-white underline">
+                            Trocar
+                        </button>
+                    </div>
+
+                    <!-- Closing requested banner -->
+                    <div id="closing-alert" class="hidden bg-amber-500/20 border border-amber-500/50 p-3 rounded-xl flex items-center gap-3 animate-pulse">
+                        <i class="fa-solid fa-bell text-amber-400 text-xl"></i>
+                        <div>
+                            <p class="text-xs font-bold text-amber-200">Fechamento Solicitado!</p>
+                            <p class="text-[11px] text-amber-300/80">O garçom já foi notificado e está vindo à sua mesa com a maquininha.</p>
+                        </div>
+                    </div>
+
+                    <!-- Orders Timeline / Items -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-list-check text-pitim-gold"></i> Itens Consumidos (Últimas 12h)
+                        </h4>
+                        <div id="comanda-items-list" class="space-y-2">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Total box -->
+                    <div class="bg-gradient-to-r from-[#181a20] to-[#14161c] p-4 rounded-xl border border-pitim-gold/30 flex items-center justify-between shadow-md">
+                        <div>
+                            <span class="text-xs font-bold text-gray-300 uppercase tracking-wider">Total Consumido:</span>
+                            <p class="text-[10px] text-gray-400">Sem taxas obrigatórias</p>
+                        </div>
+                        <span id="comanda-total-amount" class="text-2xl font-black text-pitim-gold font-display">R$ 0,00</span>
+                    </div>
+
+                    <!-- Fechar Comanda CTA -->
+                    <div id="fechar-comanda-container" class="pt-2">
+                        <button onclick="requestCloseComanda()" id="btn-fechar-comanda" class="w-full bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-bold py-3.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow-lg transition transform active:scale-95">
+                            <i class="fa-solid fa-bell-concierge text-base"></i>
+                            <span>Fechar Comanda (Chamar Garçom)</span>
+                        </button>
+                        <p class="text-[11px] text-center text-gray-400 mt-2">
+                            O garçom virá até sua mesa para receber em dinheiro, cartão ou PIX.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="p-3 border-t border-pitim-border bg-[#12141a] flex justify-end">
+                <button onclick="closeComandaModal()" class="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition">
+                    Fechar Janela
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Table Switch Modal -->
+    <div id="table-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-[#181b22] border border-pitim-border rounded-2xl w-full max-w-sm p-5 shadow-2xl">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display font-bold text-lg text-white">Identificar Minha Mesa</h3>
+                <button onclick="closeTableModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-3 mb-5">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Mesa</label>
+                    <select id="modal-select-table" class="w-full bg-[#12141a] text-white text-xs p-2.5 rounded-lg border border-pitim-border focus:border-pitim-gold focus:outline-none">
+                        <option value="Mesa 01">Mesa 01</option>
+                        <option value="Mesa 02">Mesa 02</option>
+                        <option value="Mesa 03">Mesa 03</option>
+                        <option value="Mesa 04">Mesa 04</option>
+                        <option value="Mesa 05">Mesa 05</option>
+                        <option value="Mesa 06">Mesa 06</option>
+                        <option value="Mesa 07">Mesa 07</option>
+                        <option value="Mesa 08">Mesa 08</option>
+                        <option value="Mesa 09">Mesa 09</option>
+                        <option value="Mesa 10">Mesa 10</option>
+                        <option value="Mesa 11">Mesa 11</option>
+                        <option value="Mesa 12">Mesa 12</option>
+                        <option value="Mesa 13">Mesa 13</option>
+                        <option value="Mesa 14">Mesa 14</option>
+                        <option value="Mesa 15">Mesa 15</option>
+                        <option value="Mesa Balcão">Mesa Balcão</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Seu Nome</label>
+                    <input type="text" id="modal-input-name" placeholder="Ex: Wilson" class="w-full bg-[#12141a] text-white text-xs p-2.5 rounded-lg border border-pitim-border focus:border-pitim-gold focus:outline-none">
+                </div>
+            </div>
+            <button onclick="saveTableIdentification()" class="w-full gold-gradient text-black font-bold py-2.5 px-4 rounded-xl text-xs">
+                Salvar Identificação
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast" class="fixed top-20 right-4 z-50 transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none">
+        <div class="bg-[#1f242e] border border-pitim-gold text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-xs font-semibold">
+            <span id="toast-icon" class="text-pitim-gold text-base"></span>
+            <span id="toast-msg">Mensagem</span>
+        </div>
+    </div>
+
+    <!-- Frontend Script -->
+    <script>
+        // State
+        let allProducts = [];
+        let categories = {};
+        let currentCategory = 'all';
+        let cart = []; // [{ product, quantity, notes }]
+        let selectedProductForModal = null;
+        let modalQty = 1;
+
+        // Customer Identity stored in localStorage
+        let customerTable = localStorage.getItem("pitim_table") || "";
+        let customerName = localStorage.getItem("pitim_name") || "";
+
+        // Format Currency BRL
+        function formatMoney(val) {
+            return Number(val).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        // Show Toast Alert
+        function showToast(msg, icon = 'fa-check') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
+            toastMsg.innerText = msg;
+            toastIcon.className = `fa-solid ${icon} text-pitim-gold text-base`;
+            
+            toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-[-100px]', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
+        }
+
+        // Init App
+        async function initApp() {
+            updateUserPill();
+            await fetchProducts();
+            loadCartFromStorage();
+            updateCartUI();
+        }
+
+        function updateUserPill() {
+            const pillText = document.getElementById('user-pill-text');
+            if (customerTable && customerName) {
+                pillText.innerText = `${customerTable} • ${customerName}`;
+                document.getElementById('checkout-table').value = customerTable;
+                document.getElementById('checkout-name').value = customerName;
+            } else {
+                pillText.innerText = 'Identificar Mesa';
+            }
+        }
+
+        // Fetch products from API
+        async function fetchProducts() {
+            try {
+                const res = await fetch('/api/products');
+                const data = await res.json();
+                allProducts = data.products || [];
+                categories = data.categories || {};
+                renderProducts();
+            } catch (err) {
+                console.error(err);
+                document.getElementById('products-container').innerHTML = `
+                    <div class="text-center py-10 text-red-400">
+                        <i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i>
+                        <p class="text-sm">Erro ao carregar cardápio. Verifique sua conexão.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Render products grouped or filtered
+        function renderProducts(filteredList = null) {
+            const container = document.getElementById('products-container');
+            const list = filteredList || allProducts;
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16 text-gray-400">
+                        <i class="fa-solid fa-bowl-food text-4xl mb-3 text-gray-600"></i>
+                        <p class="text-sm font-semibold">Nenhum item encontrado.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Group by category if showing all
+            let html = '';
+            const cats = {};
+            list.forEach(p => {
+                if (!cats[p.category]) cats[p.category] = [];
+                cats[p.category].append ? cats[p.category].append(p) : cats[p.category].push(p);
+            });
+
+            for (const [catName, prods] of Object.entries(cats)) {
+                html += `
+                    <section class="space-y-3">
+                        <div class="flex items-center space-x-2 border-b border-pitim-border pb-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-pitim-gold"></span>
+                            <h3 class="text-lg font-bold font-display uppercase tracking-wider text-white">${catName}</h3>
+                            <span class="text-xs text-gray-400 font-medium">(${prods.length})</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                            ${prods.map(p => `
+                                <div class="bg-pitim-card border border-pitim-border rounded-xl p-3 flex gap-3 card-glow transition cursor-pointer" onclick="openProductModal(${p.id})">
+                                    <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-lg overflow-hidden bg-black/50 shrink-0 relative border border-pitim-border/60">
+                                        <img src="${p.image_url || '/static/uploads/logo.png'}" alt="${p.name}" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="flex flex-col justify-between flex-1 min-w-0">
+                                        <div>
+                                            <h4 class="font-bold text-sm text-white line-clamp-1 leading-snug">${p.name}</h4>
+                                            <p class="text-[11px] text-gray-400 line-clamp-2 mt-1 leading-relaxed">${p.description || ''}</p>
+                                        </div>
+                                        <div class="flex items-center justify-between pt-2">
+                                            <span class="font-bold text-pitim-gold text-sm font-display">${formatMoney(p.price)}</span>
+                                            <button onclick="event.stopPropagation(); quickAddToCart(${p.id})" class="px-2.5 py-1 bg-[#222834] hover:bg-pitim-gold hover:text-black text-pitim-gold text-xs font-bold rounded-lg border border-pitim-gold/30 transition flex items-center gap-1 active:scale-95">
+                                                <i class="fa-solid fa-plus text-[10px]"></i> Adicionar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </section>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Category Filter
+        function selectCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.classList.add('bg-pitim-gold', 'text-black');
+                    btn.classList.remove('bg-[#181b22]', 'text-gray-300');
+                } else {
+                    btn.classList.remove('bg-pitim-gold', 'text-black');
+                    btn.classList.add('bg-[#181b22]', 'text-gray-300');
+                }
+            });
+
+            if (cat === 'all') {
+                renderProducts();
+            } else {
+                const filtered = allProducts.filter(p => p.category === cat);
+                renderProducts(filtered);
+            }
+        }
+
+        // Search Filter
+        function filterProducts() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const clearBtn = document.getElementById('clear-search');
+            if (query) {
+                clearBtn.classList.remove('hidden');
+                const filtered = allProducts.filter(p => 
+                    p.name.toLowerCase().includes(query) || 
+                    (p.description && p.description.toLowerCase().includes(query)) ||
+                    p.category.toLowerCase().includes(query)
+                );
+                renderProducts(filtered);
+            } else {
+                clearBtn.classList.add('hidden');
+                selectCategory(currentCategory);
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('clear-search').classList.add('hidden');
+            selectCategory(currentCategory);
+        }
+
+        // Open Product Modal
+        function openProductModal(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+            selectedProductForModal = product;
+            modalQty = 1;
+
+            document.getElementById('modal-img').src = product.image_url || '/static/uploads/logo.png';
+            document.getElementById('modal-category').innerText = product.category;
+            document.getElementById('modal-name').innerText = product.name;
+            document.getElementById('modal-desc').innerText = product.description || 'Petisco preparado na hora com os melhores ingredientes.';
+            document.getElementById('modal-price').innerText = formatMoney(product.price);
+            document.getElementById('modal-notes').value = '';
+            document.getElementById('modal-qty').innerText = modalQty;
+            document.getElementById('modal-subtotal').innerText = formatMoney(product.price * modalQty);
+
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+            selectedProductForModal = null;
+        }
+
+        function changeModalQty(delta) {
+            modalQty = Math.max(1, modalQty + delta);
+            document.getElementById('modal-qty').innerText = modalQty;
+            if (selectedProductForModal) {
+                document.getElementById('modal-subtotal').innerText = formatMoney(selectedProductForModal.price * modalQty);
+            }
+        }
+
+        function addModalItemToCart() {
+            if (!selectedProductForModal) return;
+            const notes = document.getElementById('modal-notes').value.trim();
+            addToCart(selectedProductForModal, modalQty, notes);
+            closeProductModal();
+            showToast(`${modalQty}x ${selectedProductForModal.name} no carrinho!`);
+        }
+
+        function quickAddToCart(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+            addToCart(product, 1, '');
+            showToast(`1x ${product.name} adicionado!`);
+        }
+
+        // Cart Logic
+        function addToCart(product, qty, notes) {
+            const existingIndex = cart.findIndex(i => i.product.id === product.id && i.notes === notes);
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity += qty;
+            } else {
+                cart.push({ product, quantity: qty, notes });
+            }
+            saveCartToStorage();
+            updateCartUI();
+        }
+
+        function updateCartItemQty(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            saveCartToStorage();
+            updateCartUI();
+            renderCartModalItems();
+        }
+
+        function removeCartItem(index) {
+            cart.splice(index, 1);
+            saveCartToStorage();
+            updateCartUI();
+            renderCartModalItems();
+        }
+
+        function saveCartToStorage() {
+            localStorage.setItem("pitim_cart", JSON.stringify(cart));
+        }
+
+        function loadCartFromStorage() {
+            try {
+                const stored = localStorage.getItem("pitim_cart");
+                if (stored) cart = JSON.parse(stored);
+            } catch (e) {
+                cart = [];
+            }
+        }
+
+        function updateCartUI() {
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalAmount = cart.reduce((sum, item) => sum + (item.quantity * item.product.price), 0);
+
+            const cartBar = document.getElementById('cart-bar');
+            const cartBarCount = document.getElementById('cart-bar-count');
+            const cartBarTotal = document.getElementById('cart-bar-total');
+
+            if (totalCount > 0) {
+                cartBar.classList.remove('hidden');
+                cartBarCount.innerText = totalCount;
+                cartBarTotal.innerText = formatMoney(totalAmount);
+            } else {
+                cartBar.classList.add('hidden');
+            }
+        }
+
+        // Cart Checkout Modal
+        function openCartModal() {
+            if (cart.length === 0) {
+                showToast("Seu carrinho está vazio!");
+                return;
+            }
+            renderCartModalItems();
+            document.getElementById('checkout-table').value = customerTable || '';
+            document.getElementById('checkout-name').value = customerName || '';
+            document.getElementById('cart-modal').classList.remove('hidden');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').classList.add('hidden');
+        }
+
+        function renderCartModalItems() {
+            const list = document.getElementById('cart-items-list');
+            if (cart.length === 0) {
+                list.innerHTML = `<p class="text-center text-xs text-gray-400 py-6">Carrinho vazio.</p>`;
+                document.getElementById('cart-summary-total').innerText = formatMoney(0);
+                return;
+            }
+
+            let total = 0;
+            list.innerHTML = cart.map((item, idx) => {
+                const sub = item.product.price * item.quantity;
+                total += sub;
+                return `
+                    <div class="bg-[#12141a] p-3 rounded-xl border border-pitim-border flex items-center justify-between gap-3">
+                        <div class="flex-1 min-w-0">
+                            <h5 class="text-xs font-bold text-white line-clamp-1">${item.product.name}</h5>
+                            <p class="text-[11px] text-pitim-gold font-semibold">${formatMoney(item.product.price)} un.</p>
+                            ${item.notes ? `<p class="text-[10px] text-gray-400 italic mt-0.5"><i class="fa-solid fa-note-sticky text-amber-500"></i> ${item.notes}</p>` : ''}
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="flex items-center bg-[#1a1e27] rounded-lg border border-pitim-border">
+                                <button onclick="updateCartItemQty(${idx}, -1)" class="w-7 h-7 text-gray-300 hover:text-white flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+                                <span class="w-6 text-center text-xs font-bold text-white">${item.quantity}</span>
+                                <button onclick="updateCartItemQty(${idx}, 1)" class="w-7 h-7 text-gray-300 hover:text-white flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                            <span class="text-xs font-bold text-white font-display w-16 text-right">${formatMoney(sub)}</span>
+                            <button onclick="removeCartItem(${idx})" class="text-gray-500 hover:text-red-400 p-1">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('cart-summary-total').innerText = formatMoney(total);
+        }
+
+        // Submit Order
+        async function submitOrder() {
+            const table = document.getElementById('checkout-table').value.trim();
+            const name = document.getElementById('checkout-name').value.trim();
+            const notes = document.getElementById('checkout-notes').value.trim();
+
+            if (!table) {
+                alert("Por favor, selecione a mesa.");
+                return;
+            }
+            if (!name) {
+                alert("Por favor, informe seu nome para a comanda.");
+                return;
+            }
+            if (cart.length === 0) {
+                alert("O carrinho está vazio.");
+                return;
+            }
+
+            // Save identity
+            customerTable = table;
+            customerName = name;
+            localStorage.setItem("pitim_table", table);
+            localStorage.setItem("pitim_name", name);
+            updateUserPill();
+
+            const btn = document.getElementById('btn-submit-order');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Enviando...`;
+
+            try {
+                const payload = {
+                    table_number: table,
+                    customer_name: name,
+                    notes: notes,
+                    items: cart.map(i => ({
+                        product_id: i.product.id,
+                        quantity: i.quantity,
+                        notes: i.notes || ""
+                    }))
+                };
+
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    cart = [];
+                    saveCartToStorage();
+                    updateCartUI();
+                    closeCartModal();
+                    showToast("🎉 Pedido enviado com sucesso para a cozinha!");
+                    setTimeout(() => openComandaModal(), 800);
+                } else {
+                    alert(data.detail || "Erro ao enviar pedido.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Erro de conexão ao enviar pedido.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>Confirmar Pedido</span>`;
+            }
+        }
+
+        // Comanda Digital Modal
+        async function openComandaModal() {
+            const modal = document.getElementById('comanda-modal');
+            modal.classList.remove('hidden');
+
+            if (!customerTable || !customerName) {
+                document.getElementById('comanda-login-box').classList.remove('hidden');
+                document.getElementById('comanda-details-box').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('comanda-login-box').classList.add('hidden');
+            document.getElementById('comanda-details-box').classList.remove('hidden');
+            await loadComanda();
+        }
+
+        function closeComandaModal() {
+            document.getElementById('comanda-modal').classList.add('hidden');
+        }
+
+        function loadComandaFromInput() {
+            const table = document.getElementById('comanda-input-table').value.trim();
+            const name = document.getElementById('comanda-input-name').value.trim();
+            if (!table || !name) {
+                alert("Informe a mesa e o seu nome.");
+                return;
+            }
+            customerTable = table;
+            customerName = name;
+            localStorage.setItem("pitim_table", table);
+            localStorage.setItem("pitim_name", name);
+            updateUserPill();
+            openComandaModal();
+        }
+
+        function switchComandaIdentity() {
+            document.getElementById('comanda-login-box').classList.remove('hidden');
+            document.getElementById('comanda-details-box').classList.add('hidden');
+            document.getElementById('comanda-input-table').value = customerTable || '';
+            document.getElementById('comanda-input-name').value = customerName || '';
+        }
+
+        async function loadComanda() {
+            document.getElementById('comanda-badge-table').innerText = customerTable;
+            document.getElementById('comanda-badge-name').innerText = customerName;
+
+            try {
+                const res = await fetch('/api/comanda/consultar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        table_number: customerTable,
+                        customer_name: customerName
+                    })
+                });
+
+                const data = await res.json();
+                const list = document.getElementById('comanda-items-list');
+                const totalAmountEl = document.getElementById('comanda-total-amount');
+                const statusBadge = document.getElementById('comanda-badge-status');
+                const closingAlert = document.getElementById('closing-alert');
+                const fecharBtn = document.getElementById('btn-fechar-comanda');
+
+                if (!data.exists || data.items.length === 0) {
+                    list.innerHTML = `
+                        <div class="text-center py-8 text-gray-400 bg-[#12141a] rounded-xl border border-pitim-border">
+                            <i class="fa-solid fa-receipt text-3xl mb-2 text-gray-600"></i>
+                            <p class="text-xs font-semibold">Nenhum consumo registrado nas últimas 12h.</p>
+                            <p class="text-[11px] text-gray-500 mt-0.5">Faça um pedido no cardápio para abrir sua comanda.</p>
+                        </div>
+                    `;
+                    totalAmountEl.innerText = formatMoney(0);
+                    statusBadge.innerText = 'Sem consumo ativo';
+                    statusBadge.className = 'font-semibold text-gray-400';
+                    closingAlert.classList.add('hidden');
+                    fecharBtn.disabled = true;
+                    fecharBtn.classList.add('opacity-50', 'pointer-events-none');
+                    return;
+                }
+
+                fecharBtn.disabled = false;
+                fecharBtn.classList.remove('opacity-50', 'pointer-events-none');
+                totalAmountEl.innerText = formatMoney(data.total);
+
+                if (data.status === 'closing_requested') {
+                    statusBadge.innerText = 'Fechamento Solicitado 🛎️';
+                    statusBadge.className = 'font-semibold text-amber-400';
+                    closingAlert.classList.remove('hidden');
+                    fecharBtn.innerHTML = `<i class="fa-solid fa-check"></i> <span>Garçom Chamado!</span>`;
+                    fecharBtn.classList.add('bg-amber-600', 'pointer-events-none');
+                } else if (data.status === 'paid' || data.status === 'closed') {
+                    statusBadge.innerText = 'Paga / Finalizada ✅';
+                    statusBadge.className = 'font-semibold text-emerald-400';
+                    closingAlert.classList.add('hidden');
+                    fecharBtn.classList.add('hidden');
+                } else {
+                    statusBadge.innerText = 'Aberta 🟢';
+                    statusBadge.className = 'font-semibold text-emerald-400';
+                    closingAlert.classList.add('hidden');
+                    fecharBtn.innerHTML = `<i class="fa-solid fa-bell-concierge"></i> <span>Fechar Comanda (Chamar Garçom)</span>`;
+                    fecharBtn.classList.remove('bg-amber-600', 'pointer-events-none');
+                }
+
+                // Render items
+                list.innerHTML = data.items.map(item => `
+                    <div class="bg-[#12141a] p-3 rounded-xl border border-pitim-border flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-bold text-white">${item.quantity}x ${item.product_name}</p>
+                            ${item.notes ? `<p class="text-[10px] text-gray-400 italic"><i class="fa-solid fa-note-sticky text-amber-500"></i> ${item.notes}</p>` : ''}
+                            <span class="text-[10px] px-1.5 py-0.5 rounded ${
+                                item.status === 'delivered' ? 'bg-emerald-500/20 text-emerald-400' :
+                                item.status === 'preparing' ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-500/20 text-blue-400'
+                            }">${
+                                item.status === 'delivered' ? 'Entregue' :
+                                item.status === 'preparing' ? 'Em preparo' : 'Recebido'
+                            }</span>
+                        </div>
+                        <span class="text-xs font-bold text-pitim-gold font-display">${formatMoney(item.subtotal)}</span>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error(err);
+                alert("Erro ao consultar comanda.");
+            }
+        }
+
+        async function requestCloseComanda() {
+            if (!confirm(`Deseja solicitar o fechamento da sua comanda (${customerTable} - ${customerName})? O garçom virá à sua mesa para receber o pagamento.`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/comanda/fechar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        table_number: customerTable,
+                        customer_name: customerName
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast("🛎️ Garçom notificado! Ele já está vindo à sua mesa.");
+                    await loadComanda();
+                } else {
+                    alert(data.detail || "Erro ao solicitar fechamento.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Erro de conexão ao chamar garçom.");
+            }
+        }
+
+        // Table Switch Modal
+        function openTableModal() {
+            document.getElementById('modal-select-table').value = customerTable || 'Mesa 01';
+            document.getElementById('modal-input-name').value = customerName || '';
+            document.getElementById('table-modal').classList.remove('hidden');
+        }
+
+        function closeTableModal() {
+            document.getElementById('table-modal').classList.add('hidden');
+        }
+
+        function saveTableIdentification() {
+            const table = document.getElementById('modal-select-table').value;
+            const name = document.getElementById('modal-input-name').value.trim();
+            if (!table || !name) {
+                alert("Preencha a mesa e o seu nome.");
+                return;
+            }
+            customerTable = table;
+            customerName = name;
+            localStorage.setItem("pitim_table", table);
+            localStorage.setItem("pitim_name", name);
+            updateUserPill();
+            closeTableModal();
+            showToast(`Identificado como ${table} • ${name}`);
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

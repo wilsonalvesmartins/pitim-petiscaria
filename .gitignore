@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+data/*.db
+data/*.db-shm
+data/*.db-wal
+scratch/
+.system_generated/
+*.tmp

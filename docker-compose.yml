@@ -1,0 +1,18 @@
+services:
+  pitim-app:
+    build: .
+    container_name: pitim-petiscaria
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - DATA_DIR=/app/data
+      - ADMIN_USER=admin
+      - ADMIN_PASS=admin123
+    volumes:
+      - pitim_data:/app/data
+
+volumes:
+  pitim_data:
+    name: pitim_data

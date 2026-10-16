@@ -1,0 +1,601 @@
+/* ========================================================
+   PITIM PETISCARIA & ESPETOS - TV DISPLAY SYSTEM (1080P)
+   ======================================================== */
+
+:root {
+  --bg-main: #0c0d11;
+  --bg-card: rgba(20, 22, 28, 0.88);
+  --bg-card-hover: rgba(28, 31, 40, 0.95);
+  --border-card: rgba(229, 168, 59, 0.25);
+  --border-glow: rgba(255, 115, 0, 0.4);
+  --accent-gold: #e5a83b;
+  --accent-amber: #ff9800;
+  --accent-orange: #ff5722;
+  --accent-fire: #ff3d00;
+  --text-main: #fef8ed;
+  --text-muted: #a6adb9;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-headings: 'Montserrat', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  user-select: none;
+}
+
+/* Background subtle grid & dark gradient */
+body {
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(255, 87, 34, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(229, 168, 59, 0.07) 0%, transparent 45%),
+    linear-gradient(to bottom, #090a0d 0%, #101217 100%);
+  position: relative;
+}
+
+/* Embers particle layer */
+.embers-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.ember {
+  position: absolute;
+  bottom: -20px;
+  background: radial-gradient(circle, #ffca28 20%, #ff5722 70%, transparent 100%);
+  border-radius: 50%;
+  opacity: 0.6;
+  filter: blur(1px);
+  animation: floatEmber linear infinite;
+}
+
+@keyframes floatEmber {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-110vh) translateX(var(--drift)) scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* Main Dashboard 16:9 Grid */
+.tv-dashboard {
+  position: relative;
+  z-index: 2;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 24px 14px 24px;
+  gap: 16px;
+}
+
+/* TV Card General Style */
+.tv-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card Header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  background: rgba(12, 14, 18, 0.6);
+  border-bottom: 1px solid rgba(229, 168, 59, 0.15);
+  z-index: 5;
+}
+
+.tag-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-headings);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+}
+
+.flame-icon {
+  font-size: 1.1rem;
+  animation: flicker 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes flicker {
+  0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 4px #ff5722); }
+  100% { transform: scale(1.15) rotate(4deg); filter: drop-shadow(0 0 10px #ff9800); }
+}
+
+.ad-slide-counter {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+
+/* Equalizer audio bars */
+.music-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+}
+
+.bar {
+  width: 3px;
+  background: var(--accent-amber);
+  border-radius: 2px;
+  animation: equalize 1s infinite alternate ease-in-out;
+}
+
+.bar1 { height: 14px; animation-duration: 0.8s; }
+.bar2 { height: 8px; animation-duration: 0.5s; }
+.bar3 { height: 16px; animation-duration: 0.9s; }
+
+@keyframes equalize {
+  0% { height: 4px; }
+  100% { height: 16px; }
+}
+
+.now-playing-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  background: rgba(255, 152, 0, 0.12);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.pulsing-dot {
+  width: 8px;
+  height: 8px;
+  background: #00e676;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #00e676;
+  animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* ========================================================
+   TOP ROW: Ads (50%) & YouTube (50%)
+   ======================================================== */
+.tv-top-row {
+  flex: 68;
+  display: flex;
+  gap: 16px;
+  min-height: 0;
+}
+
+.ads-card {
+  flex: 1;
+}
+
+.ads-display-area {
+  flex: 1;
+  position: relative;
+  background: #000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ad-media-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ad-media-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background-color: #000;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.ad-media-item.active {
+  opacity: 1;
+  z-index: 2;
+}
+
+/* Ad Progress Track */
+.ad-progress-track {
+  height: 6px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.ad-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-orange), var(--accent-amber));
+  box-shadow: 0 0 8px var(--accent-amber);
+  transition: width 0.1s linear;
+}
+
+/* YouTube Player Card */
+.player-card {
+  flex: 1;
+}
+
+.player-container {
+  flex: 1;
+  position: relative;
+  background: #000;
+  overflow: hidden;
+}
+
+#youtubePlayer {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.audio-unmute-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.unmute-btn {
+  background: linear-gradient(135deg, var(--accent-orange), var(--accent-amber));
+  color: #fff;
+  border: none;
+  font-family: var(--font-headings);
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 16px 32px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 0 25px rgba(255, 87, 34, 0.6);
+  animation: pulseBtn 2s infinite;
+}
+
+@keyframes pulseBtn {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ========================================================
+   BOTTOM ROW: Animated Logo (Left) & QR Code (Right)
+   ======================================================== */
+.tv-bottom-row {
+  flex: 32;
+  display: flex;
+  gap: 16px;
+  min-height: 0;
+}
+
+/* Brand Card (Left) */
+.brand-card {
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  padding: 14px 28px;
+  gap: 28px;
+  background: linear-gradient(135deg, rgba(20, 22, 28, 0.95) 0%, rgba(32, 22, 18, 0.85) 100%);
+  border: 1px solid rgba(255, 115, 0, 0.35);
+}
+
+.logo-wrapper {
+  position: relative;
+  width: 155px;
+  height: 155px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Glowing fire aura */
+.logo-glow-aura {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 87, 34, 0.4) 0%, rgba(229, 168, 59, 0.2) 50%, transparent 70%);
+  filter: blur(15px);
+  animation: auraPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes auraPulse {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  100% { transform: scale(1.15); opacity: 0.95; }
+}
+
+/* Circular Logo with breathing floating motion */
+.pitim-logo {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 15px rgba(255, 115, 0, 0.65));
+  animation: floatLogo 4s ease-in-out infinite;
+}
+
+@keyframes floatLogo {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-5px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(5px) rotate(-1deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 3.4rem;
+  letter-spacing: 3px;
+  line-height: 0.95;
+  color: var(--text-main);
+  text-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+}
+
+.brand-subtitle {
+  font-family: var(--font-headings);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: var(--accent-gold);
+  margin-top: 4px;
+}
+
+.brand-features {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.feat-badge {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(229, 168, 59, 0.25);
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f0ede6;
+}
+
+/* QR Code Card (Right) */
+.qr-card {
+  flex: 1;
+  padding: 14px 28px;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(20, 22, 28, 0.95) 0%, rgba(28, 25, 20, 0.9) 100%);
+  border: 1px solid rgba(229, 168, 59, 0.35);
+}
+
+.qr-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.qr-heading-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.qr-title {
+  font-family: var(--font-headings);
+  font-size: 2.2rem;
+  font-style: italic;
+  font-weight: 900;
+  color: var(--text-main);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.qr-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  max-width: 320px;
+}
+
+.order-pills {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pill {
+  background: rgba(255, 152, 0, 0.15);
+  border: 1px solid rgba(255, 152, 0, 0.4);
+  color: var(--accent-gold);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+
+.qr-code-box {
+  flex-shrink: 0;
+}
+
+.qr-border-glow {
+  padding: 6px;
+  background: #121316;
+  border: 2px solid var(--accent-amber);
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(255, 152, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-image {
+  width: 125px;
+  height: 125px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+/* ========================================================
+   FOOTER: News Ticker Marquee & Clock
+   ======================================================== */
+.tv-footer {
+  height: 48px;
+  background: rgba(15, 17, 21, 0.95);
+  border: 1px solid rgba(229, 168, 59, 0.3);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.ticker-badge {
+  background: linear-gradient(135deg, var(--accent-orange), var(--accent-fire));
+  color: #fff;
+  font-family: var(--font-headings);
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(255, 61, 0, 0.5);
+  flex-shrink: 0;
+}
+
+.ticker-wrap {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  white-space: nowrap;
+}
+
+.ticker-content {
+  display: inline-block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 1px;
+  padding-left: 100%;
+  animation: marquee 25s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.tv-clock-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 5px 14px;
+  border-radius: 10px;
+  font-family: var(--font-headings);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  flex-shrink: 0;
+}
+
+/* Fullscreen Helper */
+.fullscreen-btn {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.fullscreen-btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.8);
+}
